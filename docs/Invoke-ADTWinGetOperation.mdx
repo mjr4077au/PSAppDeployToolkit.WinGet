@@ -1,0 +1,315 @@
+---
+id: Invoke-ADTWinGetOperation
+title: Invoke-ADTWinGetOperation
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+A PowerShell wrapper for WinGet, supporting install, uninstall and list operations.
+
+## SYNTAX
+
+### list (Default)
+
+```powershell
+Invoke-ADTWinGetOperation -Id <String> [-Version <String>] [-Source <String>] [<CommonParameters>]
+```
+
+### install-override
+
+```powershell
+Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
+ [-Installer-Type <String>] [-Architecture <String>] -Override <String> [-Force] [-IgnoreHashFailure]
+ [-DebugHashFailure] [<CommonParameters>]
+```
+
+### install-custom
+
+```powershell
+Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
+ [-Installer-Type <String>] [-Architecture <String>] -Custom <String> [-Force] [-IgnoreHashFailure]
+ [-DebugHashFailure] [<CommonParameters>]
+```
+
+### install
+
+```powershell
+Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
+ [-Installer-Type <String>] [-Architecture <String>] [-Custom <String>] [-Override <String>] [-Force]
+ [-IgnoreHashFailure] [-DebugHashFailure] [<CommonParameters>]
+```
+
+### uninstall
+
+```powershell
+Invoke-ADTWinGetOperation [-Uninstall] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
+ [-Force] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+This script wraps around the winget.exe binary to provide enhanced usability for install, uninstall and list (detection) operations via Intune or SCCM.
+
+Additionally, this script logs all transactions to disk, colour-codes errors and extracts install failure exit codes and provides it to the caller, plus more.
+
+For Version 2.0, we'll (probably) swap to WinGet's PowerShell module when its out of alpha/beta and if they do end up supporting PowerShell/WMF 5.1.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Invoke-ADTWinGetOperation -Install -Id Google.Chrome
+```
+
+Installs Google Chrome via WinGet.
+
+## PARAMETERS
+
+### -Install
+
+Installs a WinGet package.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: install-override, install-custom, install
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Uninstall
+
+Uninstalls a WinGet Package.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: uninstall
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Id
+
+The ID of the package for the requested operation.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Version
+
+The Version of the package for the requested operation (if null, the latest will be installed).
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Scope
+
+Whether the package is machine or user-scoped (if null, the packaged will be scoped to the machine).
+
+```yaml
+Type: String
+Parameter Sets: install-override, install-custom, install, uninstall
+Aliases:
+
+Required: False
+Position: Named
+Default value: Machine
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+
+Provide the pre-configured WinGet source where the package should come from.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: Winget
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Installer-Type
+
+Provide the type of installer that WinGet should use.
+Some manifests give both MSI and non-MSI installer types.
+
+```yaml
+Type: String
+Parameter Sets: install-override, install-custom, install
+Aliases: InstallerType
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Architecture
+
+The archtecture of the package for the requested operation (if null, WinGet's default behaviour will be used).
+
+```yaml
+Type: String
+Parameter Sets: install-override, install-custom, install
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Custom
+
+Install/uninstall arguments to append to default arguments during the requested operation.
+
+```yaml
+Type: String
+Parameter Sets: install-custom
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: install
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Override
+
+Install/uninstall arguments to override default arguments during the requested operation.
+
+```yaml
+Type: String
+Parameter Sets: install-override
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: install
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+
+Forces an install/uninstall operation to be attempted, even if the application is deemed installed/uninstalled already.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: install-override, install-custom, install, uninstall
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IgnoreHashFailure
+
+Allows overriding a failed installer hash comparison in an administrative context.
+Useful for apps like Google Chrome where the URLs are not versioned.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: install-override, install-custom, install
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DebugHashFailure
+
+Forces the $IgnoreHashFailure pathway for debugging purposes without having to edit the script to force it.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: install-override, install-custom, install
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+## OUTPUTS
+
+## NOTES
+
+## RELATED LINKS

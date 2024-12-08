@@ -9,5 +9,5 @@
  */
 
 module.exports = [
-    'commands/New-ADTPublicFunction'
+    'commands/Invoke-ADTWinGetOperation'
 ];

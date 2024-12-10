@@ -21,6 +21,7 @@ function Get-ADTWinGetPath
     }
 
     # Test whether WinGet is installed and available at all.
+    Write-ADTLogEntry -Message "Finding best file path for WinGet, please wait..."
     if (!($wingetPath = Out-ADTWinGetPath) -or ![System.IO.File]::Exists($wingetPath))
     {
         # Throw if we're not admin.

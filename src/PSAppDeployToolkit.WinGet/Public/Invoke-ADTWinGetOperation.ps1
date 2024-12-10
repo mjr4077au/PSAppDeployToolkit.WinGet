@@ -181,7 +181,7 @@ function Invoke-ADTWinGetOperation
         [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
         # Store the mode of operation.
-        $Action = $PSCmdlet.ParameterSetName -replace '-.+'
+        $wgAction = $PSCmdlet.ParameterSetName -replace '-.+'
 
         # Set the log file path.
         $logFile = if (Test-ADTSessionActive)
@@ -196,7 +196,7 @@ function Invoke-ADTWinGetOperation
 
     process
     {
-        Write-ADTLogEntry -Message "Commencing WinGet $Action operation."
+        Write-ADTLogEntry -Message "Commencing WinGet $wgAction operation."
         try
         {
             try
@@ -206,22 +206,21 @@ function Invoke-ADTWinGetOperation
                 $wgExecPath = Get-ADTWinGetPath
 
                 # Test whether we're debugging $IgnoreHashFailure.
-                $debugging = $Action.Equals('install') -and $DebugHashFailure
-                if (!$debugging)
+                if (!$wgAction.Equals('install') -or !$DebugHashFailure)
                 {
                     # Set up args for Invoke-ADTWinGetExecutable and commence process.
                     $wpParams = @{
                         LiteralPath = $wgExecPath
-                        Arguments = Get-ADTWinGetArgArray -Cmdlet $PSCmdlet -Action $Action -LogFile $logFile
-                        Silent = $Action.Equals('list')
+                        Arguments = Get-ADTWinGetArgArray -Cmdlet $PSCmdlet -Action $wgAction -LogFile $logFile
+                        Silent = $wgAction.Equals('list')
                     }
                     $wgOutput = Invoke-ADTWinGetExecutable @wpParams
 
                     # If package isn't found, rerun again without --Scope argument.
-                    if ($LASTEXITCODE.Equals($wgExitCodes.NO_APPLICABLE_INSTALLER))
+                    if ($Global:LASTEXITCODE.Equals($wgExitCodes.NO_APPLICABLE_INSTALLER))
                     {
                         Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
-                        $wpParams.Arguments = Get-ADTWinGetArgArray -Cmdlet $PSCmdlet -Action $Action -LogFile $logFile -Exclude Scope
+                        $wpParams.Arguments = Get-ADTWinGetArgArray -Cmdlet $PSCmdlet -Action $wgAction -LogFile $logFile -Exclude Scope
                         $wgOutput = Invoke-ADTWinGetExecutable @wpParams
                     }
                 }
@@ -231,10 +230,12 @@ function Invoke-ADTWinGetOperation
                     Write-ADTLogEntry -Message "Bypassing WinGet as `-DebugHashFailure` has been passed. This switch should only be used for debugging purposes."
                     $wgAppData = & $wgExecPath search --Id $id --exact --accept-source-agreements | Convert-ADTWinGetListOutput
                     $wgOutput = [System.String[]]"Found $($wgAppData.Name) [$Id] Version $($wgAppData.Version)."
+                    $Global:LASTEXITCODE = $wgExitCodes.INSTALLER_HASH_MISMATCH
+                    $IgnoreHashFailure = $true
                 }
 
                 # Process resulting exit code.
-                if ($debugging -or ($LASTEXITCODE.Equals($wgExitCodes.INSTALLER_HASH_MISMATCH) -and $IgnoreHashFailure))
+                if ($Global:LASTEXITCODE.Equals($wgExitCodes.INSTALLER_HASH_MISMATCH) -and $IgnoreHashFailure)
                 {
                     # The hash failed, however we're forcing an override.
                     Write-ADTLogEntry -Message "Installation failed due to mismatched hash, attempting to override as `-IgnoreHashFailure` has been passed."
@@ -261,17 +262,17 @@ function Invoke-ADTWinGetOperation
                     # Commence installation and test the resulting exit code for success.
                     Write-ADTLogEntry -Message "Starting package install..."
                     Write-ADTLogEntry -Message "Executing [$($spParams.FilePath) $($spParams.ArgumentList)]"
-                    if ((Get-ADTWinGetAppExitCodes @wgAppInfo) -notcontains ($exitCode = (Start-Process @spParams).ExitCode))
+                    if ((Get-ADTWinGetAppExitCodes @wgAppInfo) -notcontains ($wgAppInfo.ExitCode = (Start-Process @spParams).ExitCode))
                     {
                         if ($adtSession)
                         {
-                            $adtSession.SetExitCode($exitCode)
+                            $adtSession.SetExitCode($wgAppInfo.ExitCode)
                         }
                         $naerParams = @{
-                            Exception = [System.Runtime.InteropServices.ExternalException]::new("The package installation failed with exit code [$exitCode].", $exitCode)
+                            Exception = [System.Runtime.InteropServices.ExternalException]::new("The package installation failed with exit code [$($wgAppInfo.ExitCode)].", $wgAppInfo.ExitCode)
                             Category = [System.Management.Automation.ErrorCategory]::InvalidResult
                             ErrorId = 'WinGetPackageInstallationFailure'
-                            TargetObject = $exitCode
+                            TargetObject = [pscustomobject]$wgAppInfo
                             RecommendedAction = "Please review the exit code, then try again."
                         }
                         throw (New-ADTErrorRecord @naerParams)
@@ -280,7 +281,7 @@ function Invoke-ADTWinGetOperation
                     # Yay, we made it!
                     Write-ADTLogEntry -Message "Successfully installed."
                 }
-                elseif ($wpParams.Silent -and !$LASTEXITCODE)
+                elseif ($wgAction.Equals('list') -and !$Global:LASTEXITCODE)
                 {
                     # Convert the console output into a proper object.
                     $wgAppData = $wgOutput | Convert-ADTWinGetListOutput
@@ -306,29 +307,30 @@ function Invoke-ADTWinGetOperation
                         Write-ADTLogEntry -Message "Successfully detected $wgLogBase."
                     }
                 }
-                elseif ($LASTEXITCODE)
+                elseif ($Global:LASTEXITCODE)
                 {
                     # Update the session exit code, favouring an installer's exit code over WinGet's where possible.
+                    $wgExitCode = if (($wgAppErrorLine = $($wgOutput -match 'exit code: \d+')))
+                    {
+                        [System.Int32]($wgAppErrorLine -replace '^.+:\s(\d+)\.$', '$1')
+                    }
+                    else
+                    {
+                        $Global:LASTEXITCODE
+                    }
                     if ($adtSession)
                     {
-                        if (($wgAppErrorLine = $($wgOutput -match 'exit code: \d+')))
-                        {
-                            $adtSession.SetExitCode([System.Int32]($wgAppErrorLine -replace '^.+:\s(\d+)\.$','$1'))
-                        }
-                        else
-                        {
-                            $adtSession.SetExitCode($LASTEXITCODE)
-                        }
+                        $adtSession.SetExitCode($wgExitCode)
                     }
 
                     # Throw a terminating error message. All this bullshit is to change crap like '0x800704c7 : unknown error.' to 'Unknown error.'...
-                    $wgErrorDef = $wgExitCodes.PSObject.Properties.Where({ $_.Value.Equals($LASTEXITCODE) }) | Select-Object -ExpandProperty Name
+                    $wgErrorDef = $wgExitCodes.PSObject.Properties.Where({ $_.Value.Equals($Global:LASTEXITCODE) }) | Select-Object -ExpandProperty Name
                     $wgErrorMsg = [System.Text.RegularExpressions.Regex]::Replace($wgOutput[-1], '^0x\w{8}\s:\s(\w)', { $args[0].Groups[1].Value.ToUpper() })
                     $naerParams = @{
-                        Exception = [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code 0x$($LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].", $LASTEXITCODE)
+                        Exception = [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code 0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].", $wgExitCode)
                         Category = [System.Management.Automation.ErrorCategory]::InvalidResult
                         ErrorId = 'WinGetPackageInstallationFailure'
-                        TargetObject = $LASTEXITCODE
+                        TargetObject = $wgOutput
                         RecommendedAction = "Please review the exit code, then try again."
                     }
                     throw (New-ADTErrorRecord @naerParams)

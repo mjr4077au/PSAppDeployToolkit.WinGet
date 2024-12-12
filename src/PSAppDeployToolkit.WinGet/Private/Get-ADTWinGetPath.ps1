@@ -37,7 +37,7 @@ function Get-ADTWinGetPath
         }
 
         # Install Microsoft.DesktopAppInstaller.
-        Install-ADTWinGetDesktopAppInstallerDependency
+        Repair-ADTWinGetDesktopAppInstaller
 
         # Throw if the installation was successful but we still don't have WinGet.
         if (!($wingetPath = Out-ADTWinGetPath) -or ![System.IO.File]::Exists($wingetPath))
@@ -68,7 +68,7 @@ function Get-ADTWinGetPath
         }
 
         # Install MSVCRT onto device.
-        Install-ADTWinGetVcRedistDependency
+        Repair-ADTWinGetVisualStudioRuntime
 
         # Throw if we're still not able to run WinGet.
         if (!($wingetOutput = & $wingetPath))
@@ -99,7 +99,7 @@ function Get-ADTWinGetPath
         }
 
         # Install the missing dependency and reset variables.
-        Install-ADTWinGetDesktopAppInstallerDependency
+        Repair-ADTWinGetDesktopAppInstaller
         $wingetPath = Out-ADTWinGetPath
 
         # Ensure winget.exe is above the minimum version.

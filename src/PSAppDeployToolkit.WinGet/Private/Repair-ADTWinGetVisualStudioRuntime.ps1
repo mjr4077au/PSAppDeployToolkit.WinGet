@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Install-ADTWinGetVcRedistDependency
+# MARK: Repair-ADTWinGetVisualStudioRuntime
 #
 #-----------------------------------------------------------------------------
 
-function Install-ADTWinGetVcRedistDependency
+function Repair-ADTWinGetVisualStudioRuntime
 {
     # Set required variables for install operation.
     $pkgArch = @('x86', 'x64')[[System.Environment]::Is64BitProcess]

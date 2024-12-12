@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Install-ADTWinGetDesktopAppInstallerDependency
+# MARK: Repair-ADTWinGetDesktopAppInstaller
 #
 #-----------------------------------------------------------------------------
 
-function Install-ADTWinGetDesktopAppInstallerDependency
+function Repair-ADTWinGetDesktopAppInstaller
 {
     # Update WinGet to the latest version. Don't rely in 3rd party store API services for this.
     # https://learn.microsoft.com/en-us/windows/package-manager/winget/#install-winget-on-windows-sandbox

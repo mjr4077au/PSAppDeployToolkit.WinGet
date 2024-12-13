@@ -179,10 +179,6 @@ function Invoke-ADTWinGetOperation
             Get-ADTSession
         }
 
-        # Set console encoding as required for winget.exe output.
-        $lastConsoleOutputEncoding = [System.Console]::OutputEncoding
-        [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
         # Store the mode of operation.
         $wgAction = $PSCmdlet.ParameterSetName -replace '-.+'
 
@@ -349,11 +345,6 @@ function Invoke-ADTWinGetOperation
         {
             # Process the caught error, log it and throw depending on the specified ErrorAction.
             Invoke-ADTFunctionErrorHandler -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState -ErrorRecord $_
-        }
-        finally
-        {
-            # Ensure the console's encoding is reverted to what it was before.
-            [System.Console]::OutputEncoding = $lastConsoleOutputEncoding
         }
     }
 

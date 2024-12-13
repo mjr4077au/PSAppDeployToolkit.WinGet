@@ -16,3 +16,6 @@
         RunningAsSystem = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
         RunningAsAdmin = Test-ADTCallerIsAdmin
     })
+
+# Following the successful import, set the console's output encoding to UTF8 as required by WinGet's command line.
+[System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8

@@ -202,7 +202,6 @@ function Invoke-ADTWinGetOperation
             try
             {
                 # Define variables needed for operations.
-                $wgExitCodes = Get-ADTWinGetExitCodeTable
                 $wgExecPath = Get-ADTWinGetPath
 
                 # Test whether we're debugging $IgnoreHashFailure.
@@ -217,7 +216,7 @@ function Invoke-ADTWinGetOperation
                     $wgOutput = Invoke-ADTWinGetExecutable @wpParams
 
                     # If package isn't found, rerun again without --Scope argument.
-                    if ($Global:LASTEXITCODE.Equals($wgExitCodes.NO_APPLICABLE_INSTALLER))
+                    if ($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER)
                     {
                         Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
                         $wpParams.Arguments = Get-ADTWinGetArgArray -Cmdlet $PSCmdlet -Action $wgAction -LogFile $logFile -Exclude Scope
@@ -230,12 +229,12 @@ function Invoke-ADTWinGetOperation
                     Write-ADTLogEntry -Message "Bypassing WinGet as `-DebugHashFailure` has been passed. This switch should only be used for debugging purposes."
                     $wgAppData = & $wgExecPath search --Id $id --exact --accept-source-agreements | Convert-ADTWinGetListOutput
                     $wgOutput = [System.String[]]"Found $($wgAppData.Name) [$Id] Version $($wgAppData.Version)."
-                    $Global:LASTEXITCODE = $wgExitCodes.INSTALLER_HASH_MISMATCH
+                    $Global:LASTEXITCODE = [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH.value__
                     $IgnoreHashFailure = $true
                 }
 
                 # Process resulting exit code.
-                if ($Global:LASTEXITCODE.Equals($wgExitCodes.INSTALLER_HASH_MISMATCH) -and $IgnoreHashFailure)
+                if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH) -and $IgnoreHashFailure)
                 {
                     # The hash failed, however we're forcing an override.
                     Write-ADTLogEntry -Message "Installation failed due to mismatched hash, attempting to override as `-IgnoreHashFailure` has been passed."
@@ -324,7 +323,7 @@ function Invoke-ADTWinGetOperation
                     }
 
                     # Throw a terminating error message. All this bullshit is to change crap like '0x800704c7 : unknown error.' to 'Unknown error.'...
-                    $wgErrorDef = $wgExitCodes.PSObject.Properties.Where({ $_.Value.Equals($Global:LASTEXITCODE) }) | Select-Object -ExpandProperty Name
+                    $wgErrorDef = if ([System.Enum]::IsDefined([ADTWinGetExitCode], $Global:LASTEXITCODE)) { [ADTWinGetExitCode]$Global:LASTEXITCODE }
                     $wgErrorMsg = [System.Text.RegularExpressions.Regex]::Replace($wgOutput[-1], '^0x\w{8}\s:\s(\w)', { $args[0].Groups[1].Value.ToUpper() })
                     $naerParams = @{
                         Exception = [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code 0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].", $wgExitCode)

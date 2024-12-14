@@ -15,6 +15,11 @@
         WinGetMinVersion = [System.Version]::new(1, 7, 10582)
         RunningAsSystem = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
         RunningAsAdmin = Test-ADTCallerIsAdmin
+        ArchLookupTable = ([ordered]@{
+                [PSADT.Shared.SystemArchitecture]::ARM64 = 'arm64'
+                [PSADT.Shared.SystemArchitecture]::AMD64 = 'x64'
+                [PSADT.Shared.SystemArchitecture]::i386 = 'x86'
+            }).AsReadOnly()
     })
 
 # Following the successful import, set the console's output encoding to UTF8 as required by WinGet's command line.

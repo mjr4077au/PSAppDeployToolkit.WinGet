@@ -16,7 +16,7 @@ function Get-ADTWinGetAppInstaller
 
     # Get correct installation data from the manifest based on scope and system architecture.
     Write-ADTLogEntry -Message "Processing installer metadata from the package manifest."
-    $systemArch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
+    $systemArch = $Script:ADT.ArchLookupTable.([PSADT.OperatingSystem.OSHelper]::GetArchitecture())
     $nativeArch = $Manifest.Installers.Architecture -contains $systemArch
     $cultureName = [System.Globalization.CultureInfo]::CurrentUICulture.Name
     $wgInstaller = $Manifest.Installers | Where-Object {

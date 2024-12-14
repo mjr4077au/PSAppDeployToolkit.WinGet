@@ -24,7 +24,7 @@ function Invoke-ADTWinGetExecutable
     )
 
     # Test whether the specified source is valid before continuing.
-    if ($Source -and !($sources = & $LiteralPath source list | Convert-ADTWinGetListOutput).Name.Contains($Source))
+    if ($Source -and !($sources = Get-ADTWinGetSource -InformationAction SilentlyContinue).Name.Contains($Source))
     {
         $naerParams = @{
             Exception = [System.InvalidOperationException]::new("The specified source '$Source' is not valid. Currently configured WinGet sources are [$([System.String]::Join(', ', $sources.Name -replace '^|$','"'))].")

@@ -331,7 +331,7 @@ function Invoke-ADTWinGetDeploymentOperation
         # If we're bypassing a hash failure, process the WinGet manifest ourselves.
         if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH) -and $PSBoundParameters.ContainsKey('Ignore-Security-Hash') -and $PSBoundParameters.'Ignore-Security-Hash')
         {
-            # The hash failed, however we're forcing an override. Set up default parameters for Get-ADTWinGetAppInstaller and get started.
+            # The hash failed, however we're forcing an override. Set up default parameters for Get-ADTWinGetHashMismatchInstaller and get started.
             Write-ADTLogEntry -Message "Installation failed due to mismatched hash, attempting to override as `-IgnoreHashFailure` has been passed."
             $gawgaiParams = @{}; if ($PSBoundParameters.ContainsKey('Scope'))
             {
@@ -347,14 +347,14 @@ function Invoke-ADTWinGetDeploymentOperation
             }
 
             # Grab the manifest so we can parse out the installation info as required.
-            $wgAppInfo = [ordered]@{ Manifest = Get-ADTWinGetAppManifest -Id $wgPackage.Id -Version $wgPackage.Version }
-            $wgAppInfo.Add('Installer', (Get-ADTWinGetAppInstaller @gawgaiParams -Manifest $wgAppInfo.Manifest))
-            $wgAppInfo.Add('FilePath', (Get-ADTWinGetAppDownload -Installer $wgAppInfo.Installer))
+            $wgAppInfo = [ordered]@{ Manifest = Get-ADTWinGetHashMismatchManifest -Id $wgPackage.Id -Version $wgPackage.Version }
+            $wgAppInfo.Add('Installer', (Get-ADTWinGetHashMismatchInstaller @gawgaiParams -Manifest $wgAppInfo.Manifest))
+            $wgAppInfo.Add('FilePath', (Get-ADTWinGetHashMismatchDownload -Installer $wgAppInfo.Installer))
 
             # Set up arguments to pass to Start-Process.
             $spParams = @{
                 WorkingDirectory = $ExecutionContext.SessionState.Path.CurrentLocation.Path
-                ArgumentList = Get-ADTWinGetAppArguments @wgAppInfo -LogFile $PSBoundParameters.Log
+                ArgumentList = Get-ADTWinGetHashMismatchArgumentList @wgAppInfo -LogFile $PSBoundParameters.Log
                 FilePath = $(if ($wgAppInfo.FilePath.EndsWith('msi')) { 'msiexec.exe' } else { $wgAppInfo.FilePath })
                 PassThru = $true
                 Wait = $true
@@ -364,7 +364,7 @@ function Invoke-ADTWinGetDeploymentOperation
             $wingetOutput = $(
                 Write-ADTLogEntry -Message "Starting package install..." -PassThru
                 Write-ADTLogEntry -Message "Executing [$($spParams.FilePath) $($spParams.ArgumentList)]" -PassThru
-                if ((Get-ADTWinGetAppExitCodes @wgAppInfo) -notcontains ($Global:LASTEXITCODE = (Start-Process @spParams).ExitCode))
+                if ((Get-ADTWinGetHashMismatchExitCodes @wgAppInfo) -notcontains ($Global:LASTEXITCODE = (Start-Process @spParams).ExitCode))
                 {
                     Write-ADTLogEntry -Message "Uninstall failed with exit code: $Global:LASTEXITCODE." -PassThru
                 }

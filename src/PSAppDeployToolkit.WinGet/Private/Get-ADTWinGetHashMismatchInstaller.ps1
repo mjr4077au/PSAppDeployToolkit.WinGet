@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Get-ADTWinGetAppInstaller
+# MARK: Get-ADTWinGetHashMismatchInstaller
 #
 #-----------------------------------------------------------------------------
 
-function Get-ADTWinGetAppInstaller
+function Get-ADTWinGetHashMismatchInstaller
 {
     [CmdletBinding()]
     param
@@ -34,7 +34,7 @@ function Get-ADTWinGetAppInstaller
     $wgInstaller = $Manifest.Installers | Where-Object {
         (!$_.PSObject.Properties.Name.Contains('Scope') -or ($_.Scope -eq $Scope)) -and
         (!$_.PSObject.Properties.Name.Contains('InstallerLocale') -or ($_.InstallerLocale -eq $cultureName)) -and
-        (!$InstallerType -or (($instType = $_ | Get-ADTWinGetInstallerType) -and ($instType -eq $InstallerType))) -and
+        (!$InstallerType -or (($instType = $_ | Get-ADTWinGetHashMismatchInstallerType) -and ($instType -eq $InstallerType))) -and
         ($_.Architecture.Equals($Architecture) -or ($haveArch = $_.Architecture -eq $systemArch) -or (!$haveArch -and !$nativeArch))
     }
 
@@ -54,7 +54,7 @@ function Get-ADTWinGetAppInstaller
     elseif ($wgInstaller -is [System.Collections.IEnumerable])
     {
         # We got multiple values. Get all unique installer types from the metadata and check for uniqueness.
-        if (!$wgInstaller.Count.Equals((($wgInstTypes = $wgInstaller | Get-ADTWinGetInstallerType | Select-Object -Unique) | Measure-Object).Count))
+        if (!$wgInstaller.Count.Equals((($wgInstTypes = $wgInstaller | Get-ADTWinGetHashMismatchInstallerType | Select-Object -Unique) | Measure-Object).Count))
         {
             # Something's gone wrong as we've got duplicate installer types.
             $naerParams = @{
@@ -69,7 +69,7 @@ function Get-ADTWinGetAppInstaller
 
         # Installer types were unique, just return the first one and hope for the best.
         Write-ADTLogEntry -Message "Found installer types ['$([System.String]::Join("', '", $wgInstTypes))']; using [$($wgInstTypes[0])] metadata."
-        $wgInstaller = $wgInstaller | Where-Object { ($_ | Get-ADTWinGetInstallerType).Equals($wgInstTypes[0]) }
+        $wgInstaller = $wgInstaller | Where-Object { ($_ | Get-ADTWinGetHashMismatchInstallerType).Equals($wgInstTypes[0]) }
     }
 
     # Return installer metadata to the caller.

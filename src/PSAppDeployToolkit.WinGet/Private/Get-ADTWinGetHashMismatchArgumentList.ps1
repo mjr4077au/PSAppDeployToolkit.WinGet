@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Get-ADTWinGetAppArguments
+# MARK: Get-ADTWinGetHashMismatchArgumentList
 #
 #-----------------------------------------------------------------------------
 
-function Get-ADTWinGetAppArguments
+function Get-ADTWinGetHashMismatchArgumentList
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "This function is appropriately named and we don't need PSScriptAnalyzer telling us otherwise.")]
     [CmdletBinding()]
@@ -125,13 +125,13 @@ function Get-ADTWinGetAppArguments
             $switches
             Write-ADTLogEntry -Message "Using Silent switches from the manifest's top level."
         }
-        elseif ($instType = $Installer | Get-ADTWinGetInstallerType)
+        elseif ($instType = $Installer | Get-ADTWinGetHashMismatchInstallerType)
         {
             # We have no defined switches, try to determine switches from the installer's defined type.
             Get-ADTDefaultKnownSwitches -InstallerType $instType
             Write-ADTLogEntry -Message "Using default switches for the manifest installer's installer type ($instType)."
         }
-        elseif ($instType = $Manifest | Get-ADTWinGetInstallerType)
+        elseif ($instType = $Manifest | Get-ADTWinGetHashMismatchInstallerType)
         {
             # The installer array doesn't define a type, see if the manifest itself does.
             Get-ADTDefaultKnownSwitches -InstallerType $instType

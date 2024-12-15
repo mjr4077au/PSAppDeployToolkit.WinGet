@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Get-ADTWinGetAppDownload
+# MARK: Get-ADTWinGetHashMismatchDownload
 #
 #-----------------------------------------------------------------------------
 
-function Get-ADTWinGetAppDownload
+function Get-ADTWinGetHashMismatchDownload
 {
     [CmdletBinding()]
     [OutputType([System.String])]

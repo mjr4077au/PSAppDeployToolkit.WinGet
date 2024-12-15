@@ -245,14 +245,14 @@ function Invoke-ADTWinGetOperation
 
                     # Get relevant app information.
                     $wgAppInfo = [ordered]@{}
-                    $wgAppInfo.Add('Manifest', (Get-ADTWinGetAppManifest -AppVersion $wgAppVersion))
-                    $wgAppInfo.Add('Installer', (Get-ADTWinGetAppInstaller -Manifest $wgAppInfo.Manifest))
-                    $wgAppInfo.Add('FilePath', (Get-ADTWinGetAppDownload -Installer $wgAppInfo.Installer))
+                    $wgAppInfo.Add('Manifest', (Get-ADTWinGetHashMismatchManifest -AppVersion $wgAppVersion))
+                    $wgAppInfo.Add('Installer', (Get-ADTWinGetHashMismatchInstaller -Manifest $wgAppInfo.Manifest))
+                    $wgAppInfo.Add('FilePath', (Get-ADTWinGetHashMismatchDownload -Installer $wgAppInfo.Installer))
 
                     # Set up arguments to pass to Start-Process.
                     $spParams = @{
                         WorkingDirectory = $PWD.Path
-                        ArgumentList = Get-ADTWinGetAppArguments @wgAppInfo -LogFile $logFile
+                        ArgumentList = Get-ADTWinGetHashMismatchArgumentList @wgAppInfo -LogFile $logFile
                         FilePath = $(if ($wgAppInfo.FilePath.EndsWith('msi')) { 'msiexec.exe' } else { $wgAppInfo.FilePath })
                         PassThru = $true
                         Wait = $true
@@ -261,7 +261,7 @@ function Invoke-ADTWinGetOperation
                     # Commence installation and test the resulting exit code for success.
                     Write-ADTLogEntry -Message "Starting package install..."
                     Write-ADTLogEntry -Message "Executing [$($spParams.FilePath) $($spParams.ArgumentList)]"
-                    if ((Get-ADTWinGetAppExitCodes @wgAppInfo) -notcontains ($wgAppInfo.ExitCode = (Start-Process @spParams).ExitCode))
+                    if ((Get-ADTWinGetHashMismatchExitCodes @wgAppInfo) -notcontains ($wgAppInfo.ExitCode = (Start-Process @spParams).ExitCode))
                     {
                         if ($adtSession)
                         {

@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Get-ADTWinGetAppManifest
+# MARK: Get-ADTWinGetHashMismatchManifest
 #
 #-----------------------------------------------------------------------------
 
-function Get-ADTWinGetAppManifest
+function Get-ADTWinGetHashMismatchManifest
 {
     [CmdletBinding()]
     param

@@ -1,10 +1,10 @@
 ﻿#-----------------------------------------------------------------------------
 #
-# MARK: Get-ADTWinGetInstallerType
+# MARK: Get-ADTWinGetHashMismatchInstallerType
 #
 #-----------------------------------------------------------------------------
 
-filter Get-ADTWinGetInstallerType
+filter Get-ADTWinGetHashMismatchInstallerType
 {
     if ($_.PSObject.Properties.Name.Contains('NestedInstallerType'))
     {

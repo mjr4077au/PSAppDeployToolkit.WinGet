@@ -87,7 +87,7 @@ function Get-ADTRedirectedUri
                 }
 
                 # Return the redirected URI to the caller.
-                Write-ADTLogEntry -Message "Retrieved redireted URI [$Uri] from the provided input."
+                Write-ADTLogEntry -Message "Retrieved redirected URI [$Uri] from the provided input."
                 return $Uri
             }
             catch

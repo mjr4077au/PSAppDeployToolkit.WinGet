@@ -11,7 +11,11 @@ function Get-ADTWinGetAppManifest
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$AppVersion
+        [System.String]$Id,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Version
     )
 
     # Set up vars and get package manifest.
@@ -19,8 +23,9 @@ function Get-ADTWinGetAppManifest
     try
     {
         $wgUriBase = "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/{0}/{1}/{2}/{3}.installer.yaml"
-        $wgPkgsUri = [System.String]::Format($wgUriBase, $Id.Substring(0, 1).ToLower(), $Id.Replace('.', '/'), $AppVersion, $Id)
-        $wgManifest = Invoke-RestMethod -UseBasicParsing -Uri $wgPkgsUri | ConvertFrom-Yaml
+        $wgPkgsUri = [System.String]::Format($wgUriBase, $Id.Substring(0, 1).ToLower(), $Id.Replace('.', '/'), $Version, $Id)
+        $wgPkgYaml = Invoke-RestMethod -UseBasicParsing -Uri $wgPkgsUri -Verbose:$false
+        $wgManifest = $wgPkgYaml | ConvertFrom-Yaml
         return $wgManifest
     }
     catch

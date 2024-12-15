@@ -11,7 +11,19 @@ function Get-ADTWinGetAppInstaller
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [pscustomobject]$Manifest
+        [pscustomobject]$Manifest,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Scope,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Architecture,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$InstallerType
     )
 
     # Get correct installation data from the manifest based on scope and system architecture.
@@ -22,7 +34,7 @@ function Get-ADTWinGetAppInstaller
     $wgInstaller = $Manifest.Installers | Where-Object {
         (!$_.PSObject.Properties.Name.Contains('Scope') -or ($_.Scope -eq $Scope)) -and
         (!$_.PSObject.Properties.Name.Contains('InstallerLocale') -or ($_.InstallerLocale -eq $cultureName)) -and
-        (!${Installer-Type} -or (($instType = $_ | Get-ADTWinGetInstallerType) -and ($instType -eq ${Installer-Type}))) -and
+        (!$InstallerType -or (($instType = $_ | Get-ADTWinGetInstallerType) -and ($instType -eq $InstallerType))) -and
         ($_.Architecture.Equals($Architecture) -or ($haveArch = $_.Architecture -eq $systemArch) -or (!$haveArch -and !$nativeArch))
     }
 

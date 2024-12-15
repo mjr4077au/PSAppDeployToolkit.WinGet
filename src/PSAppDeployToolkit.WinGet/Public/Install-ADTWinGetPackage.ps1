@@ -67,6 +67,9 @@ function Install-ADTWinGetPackage
     .PARAMETER Version
         Specify the version of the package.
 
+    .PARAMETER DebugHashMismatch
+        Forces the AllowHashMismatch for debugging purposes.
+
     .INPUTS
         None
 
@@ -166,7 +169,10 @@ function Install-ADTWinGetPackage
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Version
+        [System.String]$Version,
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$DebugHashMismatch
     )
 
     begin

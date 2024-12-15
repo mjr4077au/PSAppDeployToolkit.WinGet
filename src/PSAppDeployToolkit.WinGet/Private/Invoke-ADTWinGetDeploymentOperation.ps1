@@ -37,6 +37,11 @@ function Invoke-ADTWinGetDeploymentOperation
                         [System.Management.Automation.AliasAttribute]::new('AllowHashMismatch')
                     )
                 ))
+            $paramDictionary.Add('DebugHashMismatch', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                    'DebugHashMismatch', [System.Management.Automation.SwitchParameter], $(
+                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                    )
+                ))
             $paramDictionary.Add('Architecture', [System.Management.Automation.RuntimeDefinedParameter]::new(
                     'Architecture', [System.String], $(
                         [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
@@ -168,7 +173,7 @@ function Invoke-ADTWinGetDeploymentOperation
             )
 
             # Ensure the action is also excluded.
-            $PSBoundParameters.Exclude = $('Action'; $Exclude)
+            $PSBoundParameters.Exclude = $('Action'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; $(if ($Exclude) { $Exclude } ))
 
             # Output each item for the caller to collect.
             return $(
@@ -182,21 +187,21 @@ function Invoke-ADTWinGetDeploymentOperation
         # Define internal scriptblock for invoking WinGet. This is a
         # scriptblock so Write-ADTLogEntry uses this function's source.
         $wingetInvoker = {
-            return ,[System.String[]](& $wingetPath $wingetArgs 2>&1 | & {
-                begin
-                {
-                    $waleParams = @{PassThru = $true}
-                }
-
-                process
-                {
-                    if ($_ -match '^\w+')
+            return , [System.String[]](& $wingetPath $wingetArgs 2>&1 | & {
+                    begin
                     {
-                        $waleParams.Severity = if ($_ -match 'exit code: \d+') { 3 } else { 1 }
-                        Write-ADTLogEntry @waleParams -Message ($_.Trim() -replace '((?<![.:])|:)$', '.')
+                        $waleParams = @{PassThru = $true }
                     }
-                }
-            })
+
+                    process
+                    {
+                        if ($_ -match '^\w+')
+                        {
+                            $waleParams.Severity = if ($_ -match 'exit code: \d+') { 3 } else { 1 }
+                            Write-ADTLogEntry @waleParams -Message ($_.Trim() -replace '((?<![.:])|:)$', '.')
+                        }
+                    }
+                })
         }
 
         # Throw if an id, name, or moniker hasn't been provided. This is done like this
@@ -297,16 +302,74 @@ function Invoke-ADTWinGetDeploymentOperation
 
     end
     {
-        # Invoke WinGet and print each non-null line.
-        Write-ADTLogEntry -Message "Executing [$wingetPath $wingetArgs]."
-        $wingetOutput = & $wingetInvoker
-
-        # If package isn't found, rerun again without --Scope argument.
-        if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and $noScope)
+        # Test whether we're debugging the AllowHashMismatch feature.
+        if (($Action -notmatch '^(install|upgrade)$') -or !$PSBoundParameters.ContainsKey('DebugHashMismatch') -or !$PSBoundParameters.DebugHashMismatch)
         {
-            Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
-            $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope
+            # Invoke WinGet and print each non-null line.
+            Write-ADTLogEntry -Message "Executing [$wingetPath $wingetArgs]."
             $wingetOutput = & $wingetInvoker
+
+            # If package isn't found, rerun again without --Scope argument.
+            if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and $noScope)
+            {
+                Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
+                $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope
+                $wingetOutput = & $wingetInvoker
+            }
+        }
+        else
+        {
+            # Going into bypass mode. Simulate WinGet output for the purpose of getting the app's version later on.
+            Write-ADTLogEntry -Message "Bypassing WinGet as `-DebugHashMismatch` has been passed. This switch should only be used for debugging purposes."
+            $Global:LASTEXITCODE = [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH.value__
+            $PSBoundParameters.'Ignore-Security-Hash' = $true
+        }
+
+        # If we're bypassing a hash failure, process the WinGet manifest ourselves.
+        if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH) -and $PSBoundParameters.ContainsKey('Ignore-Security-Hash') -and $PSBoundParameters.'Ignore-Security-Hash')
+        {
+            # The hash failed, however we're forcing an override. Set up default parameters for Get-ADTWinGetAppInstaller and get started.
+            Write-ADTLogEntry -Message "Installation failed due to mismatched hash, attempting to override as `-IgnoreHashFailure` has been passed."
+            $gawgaiParams = @{}; if ($PSBoundParameters.ContainsKey('Scope'))
+            {
+                $gawgaiParams.Add('Scope', $PSBoundParameters.Scope)
+            }
+            if ($PSBoundParameters.ContainsKey('Architecture'))
+            {
+                $gawgaiParams.Add('Architecture', $PSBoundParameters.Architecture)
+            }
+            if ($PSBoundParameters.ContainsKey('Installer-Type'))
+            {
+                $gawgaiParams.Add('InstallerType', $PSBoundParameters.'Installer-Type')
+            }
+
+            # Grab the manifest so we can parse out the installation info as required.
+            $wgAppInfo = [ordered]@{ Manifest = Get-ADTWinGetAppManifest -Id $wgPackage.Id -Version $wgPackage.Version }
+            $wgAppInfo.Add('Installer', (Get-ADTWinGetAppInstaller @gawgaiParams -Manifest $wgAppInfo.Manifest))
+            $wgAppInfo.Add('FilePath', (Get-ADTWinGetAppDownload -Installer $wgAppInfo.Installer))
+
+            # Set up arguments to pass to Start-Process.
+            $spParams = @{
+                WorkingDirectory = $ExecutionContext.SessionState.Path.CurrentLocation.Path
+                ArgumentList = Get-ADTWinGetAppArguments @wgAppInfo -LogFile $PSBoundParameters.Log
+                FilePath = $(if ($wgAppInfo.FilePath.EndsWith('msi')) { 'msiexec.exe' } else { $wgAppInfo.FilePath })
+                PassThru = $true
+                Wait = $true
+            }
+
+            # Commence installation and test the resulting exit code for success.
+            $wingetOutput = $(
+                Write-ADTLogEntry -Message "Starting package install..." -PassThru
+                Write-ADTLogEntry -Message "Executing [$($spParams.FilePath) $($spParams.ArgumentList)]" -PassThru
+                if ((Get-ADTWinGetAppExitCodes @wgAppInfo) -notcontains ($Global:LASTEXITCODE = (Start-Process @spParams).ExitCode))
+                {
+                    Write-ADTLogEntry -Message "Uninstall failed with exit code: $Global:LASTEXITCODE." -PassThru
+                }
+                else
+                {
+                    Write-ADTLogEntry -Message "Successfully installed." -PassThru
+                }
+            )
         }
 
         # Get the WinGet package code. If we didn't error out, assume zero as it's all we can do.

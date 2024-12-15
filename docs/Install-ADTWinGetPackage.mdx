@@ -1,0 +1,401 @@
+---
+id: Install-ADTWinGetPackage
+title: Install-ADTWinGetPackage
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Installs a WinGet Package.
+
+## SYNTAX
+
+```powershell
+Install-ADTWinGetPackage [-AllowHashMismatch] [[-Architecture] <String>] [[-Custom] <String>] [-Force]
+ [[-Header] <String>] [[-Id] <String>] [[-InstallerType] <String>] [[-Locale] <String>] [[-Location] <String>]
+ [[-Log] <String>] [[-Mode] <String>] [[-Moniker] <String>] [[-Name] <String>] [[-Override] <String>]
+ [[-Scope] <String>] [-SkipDependencies] [[-Source] <String>] [[-Version] <String>] [-DebugHashMismatch]
+ [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+This command installs a WinGet package from a configured source.
+The command includes parameters to specify values used to search for packages in the configured sources.
+By default, the command searches the winget source.
+All string-based searches are case-insensitive substring searches.
+Wildcards are not supported.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Install-WinGetPackage -Id Microsoft.PowerShell
+```
+
+This example shows how to install a package by the specifying the package identifier.
+If the package identifier is available from more than one source, you must provide additional search criteria to select a specific instance of the package.
+If more than one source is configured with the same package identifier, the user must disambiguate.
+
+### EXAMPLE 2
+
+```powershell
+Install-WinGetPackage -Name "PowerToys (Preview)"
+```
+
+This example shows how to install a package by specifying the package name.
+
+### EXAMPLE 3
+
+```powershell
+Install-WinGetPackage Microsoft.PowerShell -Version 7.4.4.0
+```
+
+This example shows how to install a specific version of a package using a query.
+The command does a query search for packages matching `Microsoft.PowerShell`.
+The results of the search a limited to matches with the version of `7.4.4.0`.
+
+## PARAMETERS
+
+### -AllowHashMismatch
+
+Allows you to download package even when the SHA256 hash for an installer or a dependency does not match the SHA256 hash in the WinGet package manifest.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Architecture
+
+Specify the processor architecture for the WinGet package installer.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Custom
+
+Use this parameter to pass additional arguments to the installer.
+The parameter takes a single string value.
+To add multiple arguments, include the arguments in the string.
+The arguments must be provided in the format expected by the installer.
+If the string contains spaces, it must be enclosed in quotes.
+This string is added to the arguments defined in the package manifest.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+
+Force the installer to run even when other checks WinGet would perform would prevent this action.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Header
+
+Custom value to be passed via HTTP header to WinGet REST sources.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Id
+
+Specify the package identifier to search for.
+The command does a case-insensitive full text match, rather than a substring match.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InstallerType
+
+A package may contain multiple installer types.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Locale
+
+Specify the locale of the installer package.
+The locale must provided in the BCP 47 format, such as `en-US`.
+For more information, see Standard locale names (/globalization/locale/standard-locale-names).
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Location
+
+Specify the file path where you want the packed to be installed.
+The installer must be able to support alternate install locations.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 7
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Log
+
+Specify the location for the installer log.
+The value can be a fully-qualified or relative path and must include the file name.
+For example: `$env:TEMP\package.log`.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 8
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Mode
+
+Specify the output mode for the installer.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 9
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Moniker
+
+Specify the moniker of the WinGet package to install.
+For example, the moniker for the Microsoft.PowerShell package is `pwsh`.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 10
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Name
+
+Specify the name of the package to be installed.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 11
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Override
+
+Use this parameter to override the existing arguments passed to the installer.
+The parameter takes a single string value.
+To add multiple arguments, include the arguments in the string.
+The arguments must be provided in the format expected by the installer.
+If the string contains spaces, it must be enclosed in quotes.
+This string overrides the arguments specified in the package manifest.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 12
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Scope
+
+Specify WinGet package installer scope.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 13
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipDependencies
+
+Specifies that the command shouldn't install the WinGet package dependencies.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+
+Specify the name of the WinGet source from which the package should be installed.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 14
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Version
+
+Specify the version of the package.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 15
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DebugHashMismatch
+
+Forces the AllowHashMismatch for debugging purposes.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### PSObject
+
+### This function returns a PSObject containing the outcome of the operation.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

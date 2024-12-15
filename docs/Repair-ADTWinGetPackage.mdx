@@ -1,0 +1,185 @@
+---
+id: Repair-ADTWinGetPackage
+title: Repair-ADTWinGetPackage
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Repairs a WinGet Package.
+
+## SYNTAX
+
+```powershell
+Repair-ADTWinGetPackage [[-Id] <String>] [[-Log] <String>] [[-Mode] <String>] [[-Moniker] <String>]
+ [[-Name] <String>] [[-Source] <String>] [[-Version] <String>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+This command repairs a WinGet package from your computer, provided the package includes repair support.
+The command includes parameters to specify values used to search for installed packages.
+By default, all string-based searches are case-insensitive substring searches.
+Wildcards are not supported.
+
+Note: Not all packages support repair.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Repair-WinGetPackage -Id "Microsoft.GDK.2406"
+```
+
+This example shows how to repair a package by specifying the package identifier.
+If the package identifier is available from more than one source, you must provide additional search criteria to select a specific instance of the package.
+
+### EXAMPLE 2
+
+```powershell
+Repair-WinGetPackage -Name "Microsoft Game Development Kit - 240602 (June 2024 Update 2)"
+```
+
+This example shows how to repair a package using the package name.
+Please note that the examples mentioned above are mainly reference examples for the repair cmdlet and may not be operational as is, since many installers don't support repair as a standard functionality.
+For the Microsoft.GDK.2406 example, the assumption is that Microsoft.GDK.2406 supports repair capability and the author of the installer has provided the necessary repair context/switches in the Package Manifest in the Package Source referenced by the WinGet Client.
+
+## PARAMETERS
+
+### -Id
+
+Specify the package identifier to search for.
+The command does a case-insensitive full text match, rather than a substring match.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Log
+
+Specify the location for the installer log.
+The value can be a fully-qualified or relative path and must include the file name.
+For example: `$env:TEMP\package.log`.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Mode
+
+Specify the output mode for the installer.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Moniker
+
+Specify the moniker of the WinGet package to install.
+For example, the moniker for the Microsoft.PowerShell package is `pwsh`.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Name
+
+Specify the name of the package to be installed.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+
+Specify the name of the WinGet source from which the package should be installed.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Version
+
+Specify the version of the package.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 7
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### PSObject
+
+### This function returns a PSObject containing the outcome of the operation.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

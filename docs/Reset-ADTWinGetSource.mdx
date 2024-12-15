@@ -1,0 +1,102 @@
+---
+id: Reset-ADTWinGetSource
+title: Reset-ADTWinGetSource
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Resets WinGet sources.
+
+## SYNTAX
+
+### Name (Default)
+
+```powershell
+Reset-ADTWinGetSource -Name <String> [<CommonParameters>]
+```
+
+### All
+
+```powershell
+Reset-ADTWinGetSource [-All] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+Resets a named WinGet source by removing the source configuration.
+You can reset all configured sources and add the default source configurations using the All switch parameter.
+This command must be executed with administrator permissions.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Reset-ADTWinGetSource -Name msstore
+```
+
+This example resets the configured source named 'msstore' by removing it.
+
+### EXAMPLE 2
+
+```powershell
+Reset-ADTWinGetSource -All
+```
+
+This example resets all configured sources and adds the default sources.
+
+## PARAMETERS
+
+### -Name
+
+The name of the source.
+
+```yaml
+Type: String
+Parameter Sets: Name
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -All
+
+Reset all sources and add the default sources.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### None
+
+### This function does not return any output.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

@@ -1,0 +1,68 @@
+---
+id: Get-ADTWinGetSource
+title: Get-ADTWinGetSource
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Lists configured WinGet sources.
+
+## SYNTAX
+
+```powershell
+Get-ADTWinGetSource [[-Name] <String>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+Lists the configured WinGet sources.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Get-ADTWinGetSource
+```
+
+Lists all configured WinGet sources.
+
+## PARAMETERS
+
+### -Name
+
+Lists the configured WinGet sources.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### PSObject
+
+### This function returns one or more objects for each WinGet source.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

@@ -1,0 +1,184 @@
+---
+id: Get-ADTWinGetPackage
+title: Get-ADTWinGetPackage
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Lists installed packages.
+
+## SYNTAX
+
+```powershell
+Get-ADTWinGetPackage [[-Command] <String>] [[-Count] <UInt32>] [[-Id] <String>] [[-Moniker] <String>]
+ [[-Name] <String>] [[-Source] <String>] [[-Tag] <String>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+This command lists all of the packages installed on your system.
+The output includes packages installed from WinGet sources and packages installed by other methods.
+Packages that have package identifiers starting with `MSIX` or `ARP` could not be correlated to a WinGet source.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Get-ADTWinGetPackage
+```
+
+This example shows how to list all packages installed on your system.
+
+### EXAMPLE 2
+
+```powershell
+Get-ADTWinGetPackage -Id "Microsoft.PowerShell"
+```
+
+This example shows how to get an installed package by its package identifier.
+
+### EXAMPLE 3
+
+```powershell
+Get-ADTWinGetPackage -Name "PowerShell"
+```
+
+This example shows how to get installed packages that match a name value.
+The command does a substring comparison of the provided name with installed package names.
+
+## PARAMETERS
+
+### -Command
+
+Specify the name of the command defined in the package manifest.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Count
+
+Limits the number of items returned by the command.
+
+```yaml
+Type: UInt32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Id
+
+Specify the package identifier for the package you want to list.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Moniker
+
+Specify the moniker of the package you want to list.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Name
+
+Specify the name of the package to list.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+
+Specify the name of the WinGet source of the package.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Tag
+
+Specify a package tag to search for.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 7
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### None
+
+### This function does not return any output.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

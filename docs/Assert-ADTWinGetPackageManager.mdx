@@ -1,0 +1,55 @@
+---
+id: Assert-ADTWinGetPackageManager
+title: Assert-ADTWinGetPackageManager
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Verifies that WinGet is installed properly.
+
+## SYNTAX
+
+```powershell
+Assert-ADTWinGetPackageManager [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+Verifies that WinGet is installed properly.
+
+Note: The cmdlet doesn't ensure that the latest version of WinGet is installed.
+It just verifies that the installed version of Winget is supported by installed version of this module.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Assert-ADTWinGetPackageManager
+```
+
+If the current version of WinGet is installed correctly, the command returns without error.
+
+## PARAMETERS
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+
+### You cannot pipe objects to this function.
+## OUTPUTS
+
+### None
+
+### This function does not return any output.
+## NOTES
+
+## RELATED LINKS
+
+[https://github.com/mjr4077au/PSAppDeployToolkit.WinGet](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet)

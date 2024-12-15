@@ -7,102 +7,54 @@ hide_table_of_contents: false
 
 ## SYNOPSIS
 
-A PowerShell wrapper for WinGet, supporting install, uninstall and list operations.
+PSAppDeployToolkit - This script performs the installation or uninstallation of an application(s).
 
 ## SYNTAX
 
-### list (Default)
-
 ```powershell
-Invoke-ADTWinGetOperation -Id <String> [-Version <String>] [-Source <String>] [<CommonParameters>]
-```
-
-### install-override
-
-```powershell
-Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
- [-Installer-Type <String>] [-Architecture <String>] -Override <String> [-Force] [-IgnoreHashFailure]
- [-DebugHashFailure] [<CommonParameters>]
-```
-
-### install-custom
-
-```powershell
-Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
- [-Installer-Type <String>] [-Architecture <String>] -Custom <String> [-Force] [-IgnoreHashFailure]
- [-DebugHashFailure] [<CommonParameters>]
-```
-
-### install
-
-```powershell
-Invoke-ADTWinGetOperation [-Install] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
- [-Installer-Type <String>] [-Architecture <String>] [-Custom <String>] [-Override <String>] [-Force]
- [-IgnoreHashFailure] [-DebugHashFailure] [<CommonParameters>]
-```
-
-### uninstall
-
-```powershell
-Invoke-ADTWinGetOperation [-Uninstall] -Id <String> [-Version <String>] [-Scope <String>] [-Source <String>]
- [-Force] [<CommonParameters>]
+Invoke-ADTWinGetOperation [-Id] <String> [[-DeploymentType] <String>] [[-DeployMode] <String>]
+ [-AllowRebootPassThru] [-TerminalServerMode] [-DisableLogging] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 
-This script wraps around the winget.exe binary to provide enhanced usability for install, uninstall and list (detection) operations via Intune or SCCM.
+- The script is provided as a template to perform an install, uninstall, or repair of an application(s).
+- The script either performs an "Install", "Uninstall", or "Repair" deployment type.
+- The install deployment type is broken down into 3 main sections/phases: Pre-Install, Install, and Post-Install.
 
-Additionally, this script logs all transactions to disk, colour-codes errors and extracts install failure exit codes and provides it to the caller, plus more.
-
-For Version 2.0, we'll (probably) swap to WinGet's PowerShell module when its out of alpha/beta and if they do end up supporting PowerShell/WMF 5.1.
+The script imports the PSAppDeployToolkit module which contains the logic and functions required to install or uninstall an application.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
 ```powershell
-Invoke-ADTWinGetOperation -Install -Id Google.Chrome
+powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeployMode Silent
 ```
 
-Installs Google Chrome via WinGet.
+### EXAMPLE 2
+
+```powershell
+powershell.exe -File Invoke-AppDeployToolkit.ps1 -AllowRebootPassThru
+```
+
+### EXAMPLE 3
+
+```powershell
+powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeploymentType Uninstall
+```
+
+### EXAMPLE 4
+
+```powershell
+Invoke-AppDeployToolkit.exe -DeploymentType "Install" -DeployMode "Silent"
+```
 
 ## PARAMETERS
 
-### -Install
-
-Installs a WinGet package.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: install-override, install-custom, install
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Uninstall
-
-Uninstalls a WinGet Package.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: uninstall
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Id
 
-The ID of the package for the requested operation.
+The WinGet package identifier for the deployment.
 
 ```yaml
 Type: String
@@ -110,15 +62,16 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: Named
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Version
+### -DeploymentType
 
-The Version of the package for the requested operation (if null, the latest will be installed).
+The type of deployment to perform.
+Default is: Install.
 
 ```yaml
 Type: String
@@ -126,31 +79,19 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
-Default value: None
+Position: 2
+Default value: Install
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Scope
+### -DeployMode
 
-Whether the package is machine or user-scoped (if null, the packaged will be scoped to the machine).
-
-```yaml
-Type: String
-Parameter Sets: install-override, install-custom, install, uninstall
-Aliases:
-
-Required: False
-Position: Named
-Default value: Machine
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Source
-
-Provide the pre-configured WinGet source where the package should come from.
+Specifies whether the installation should be run in Interactive, Silent, or NonInteractive mode.
+Default is: Interactive.
+Options: Interactive = Shows dialogs, Silent = No dialogs, NonInteractive = Very silent, i.e.
+no blocking apps.
+NonInteractive mode is automatically set if it is detected that the process is not user interactive.
 
 ```yaml
 Type: String
@@ -158,108 +99,21 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
-Default value: Winget
+Position: 3
+Default value: Interactive
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Installer-Type
+### -AllowRebootPassThru
 
-Provide the type of installer that WinGet should use.
-Some manifests give both MSI and non-MSI installer types.
-
-```yaml
-Type: String
-Parameter Sets: install-override, install-custom, install
-Aliases: InstallerType
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Architecture
-
-The archtecture of the package for the requested operation (if null, WinGet's default behaviour will be used).
-
-```yaml
-Type: String
-Parameter Sets: install-override, install-custom, install
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Custom
-
-Install/uninstall arguments to append to default arguments during the requested operation.
-
-```yaml
-Type: String
-Parameter Sets: install-custom
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: install
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Override
-
-Install/uninstall arguments to override default arguments during the requested operation.
-
-```yaml
-Type: String
-Parameter Sets: install-override
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: install
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-
-Forces an install/uninstall operation to be attempted, even if the application is deemed installed/uninstalled already.
+Allows the 3010 return code (requires restart) to be passed back to the parent process (e.g.
+SCCM) if detected from an installation.
+If 3010 is passed back to SCCM, a reboot prompt will be triggered.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: install-override, install-custom, install, uninstall
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -269,14 +123,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IgnoreHashFailure
+### -TerminalServerMode
 
-Allows overriding a failed installer hash comparison in an administrative context.
-Useful for apps like Google Chrome where the URLs are not versioned.
+Changes to "user install mode" and back to "user execute mode" for installing/uninstalling applications for Remote Desktop Session Hosts/Citrix servers.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: install-override, install-custom, install
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -286,13 +139,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DebugHashFailure
+### -DisableLogging
 
-Forces the $IgnoreHashFailure pathway for debugging purposes without having to edit the script to force it.
+Disables logging to file for the script.
+Default is: $false.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: install-override, install-custom, install
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -308,8 +162,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None. You cannot pipe objects to this script.
+
 ## OUTPUTS
+
+### None. This script does not generate any output.
 
 ## NOTES
 
 ## RELATED LINKS
+
+[https://psappdeploytoolkit.com](https://psappdeploytoolkit.com)

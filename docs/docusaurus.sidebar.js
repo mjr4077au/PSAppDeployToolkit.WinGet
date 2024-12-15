@@ -9,5 +9,16 @@
  */
 
 module.exports = [
-    'commands/Invoke-ADTWinGetOperation'
+    'commands/Assert-ADTWinGetPackageManager',
+    'commands/Find-ADTWinGetPackage',
+    'commands/Get-ADTWinGetPackage',
+    'commands/Get-ADTWinGetSource',
+    'commands/Get-ADTWinGetVersion',
+    'commands/Install-ADTWinGetPackage',
+    'commands/Invoke-ADTWinGetOperation',
+    'commands/Repair-ADTWinGetPackage',
+    'commands/Repair-ADTWinGetPackageManager',
+    'commands/Reset-ADTWinGetSource',
+    'commands/Uninstall-ADTWinGetPackage',
+    'commands/Update-ADTWinGetPackage'
 ];

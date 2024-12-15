@@ -223,6 +223,12 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
+        # Get the active ADT session object if one's in play.
+        $adtSession = if (Test-ADTSessionActive)
+        {
+            Get-ADTSession
+        }
+
         # Default the scope to "Machine" for the safety of users.
         # It's super easy to install user-scoped apps into the SYSTEM
         # user's account, and it's painful to diagnose/clean up.
@@ -236,6 +242,19 @@ function Invoke-ADTWinGetDeploymentOperation
         if (!$PSBoundParameters.ContainsKey('Source'))
         {
             $PSBoundParameters.Add('Source', 'winget')
+        }
+
+        # Add in a default log file if the caller hasn't specified one.
+        if (!$PSBoundParameters.ContainsKey('Log'))
+        {
+            $PSBoundParameters.Log = if ($adtSession)
+            {
+                "$((Get-ADTConfig).Toolkit.LogPath)\$($adtSession.InstallName)_WinGet.log"
+            }
+            else
+            {
+                "$([System.IO.Path]::GetTempPath())Invoke-ADTWinGetOperation_$([System.DateTime]::Now.ToString('O').Split('.')[0].Replace(':', $null))_WinGet.log"
+            }
         }
 
         # Attempt to find the package to install.
@@ -297,7 +316,7 @@ function Invoke-ADTWinGetDeploymentOperation
         }
         else
         {
-            0
+            $Global:LASTEXITCODE
         }
 
         # Generate an exception if we received any failure.
@@ -317,7 +336,13 @@ function Invoke-ADTWinGetDeploymentOperation
         # to give as much information as we can to the caller, including installer exit code.
         if ($wingetException)
         {
-            # Get the installer's exit code if there is one.
+            # Update the session's exit code if one's in play.
+            if ($adtSession)
+            {
+                $adtSession.SetExitCode($wingetPackageErrCode)
+            }
+
+            # Throw our determined exception out to the caller to handle.
             $naerParams = @{
                 Exception = $wingetException
                 Category = [System.Management.Automation.ErrorCategory]::InvalidResult

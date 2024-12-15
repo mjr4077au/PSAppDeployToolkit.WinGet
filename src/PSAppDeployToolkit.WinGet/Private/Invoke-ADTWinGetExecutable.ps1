@@ -24,7 +24,7 @@ function Invoke-ADTWinGetExecutable
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$LiteralPath,
+        [System.IO.FileInfo]$LiteralPath,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]

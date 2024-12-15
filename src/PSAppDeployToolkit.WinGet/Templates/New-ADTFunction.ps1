@@ -27,6 +27,9 @@ function New-ADTFunction
         New-ADTFunction
 
         Invokes the New-ADTFunction function and returns any output.
+
+    .LINK
+        https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
     #>
 
     [CmdletBinding()]

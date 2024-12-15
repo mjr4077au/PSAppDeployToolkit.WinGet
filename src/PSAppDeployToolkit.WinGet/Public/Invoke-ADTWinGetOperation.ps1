@@ -60,6 +60,9 @@ function Invoke-ADTWinGetOperation
         Invoke-ADTWinGetOperation -Install -Id Google.Chrome
 
         Installs Google Chrome via WinGet.
+
+    .LINK
+        https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
     #>
 
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Install', Justification = "This parameter is used via [Get-ADTWinGetArgArray] which PSScriptAnalyzer doesn't know or understand.")]
@@ -202,6 +205,7 @@ function Invoke-ADTWinGetOperation
             try
             {
                 # Define variables needed for operations.
+                Repair-ADTWinGetPackageManager
                 $wgExecPath = Get-ADTWinGetPath
 
                 # Test whether we're debugging $IgnoreHashFailure.

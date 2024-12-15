@@ -180,7 +180,10 @@ function Invoke-ADTWinGetDeploymentOperation
                 $Action
                 Convert-ADTFunctionParamsToArgArray @PSBoundParameters -Preset WinGet
                 '--accept-source-agreements'
-                '--accept-package-agreements'
+                if ($Action -ne 'Uninstall')
+                {
+                    '--accept-package-agreements'
+                }
             )
         }
 

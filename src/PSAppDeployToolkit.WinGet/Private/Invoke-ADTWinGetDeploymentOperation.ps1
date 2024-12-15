@@ -152,6 +152,53 @@ function Invoke-ADTWinGetDeploymentOperation
 
     begin
     {
+        # Internal function to generate arguments array for WinGet.
+        function Out-ADTWinGetDeploymentArgumentList
+        {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [System.Collections.Generic.Dictionary[System.String, System.Object]]$BoundParameters,
+
+                [Parameter(Mandatory = $false)]
+                [ValidateNotNullOrEmpty()]
+                [System.String[]]$Exclude
+            )
+
+            # Ensure the action is also excluded.
+            $PSBoundParameters.Exclude = $('Action'; $Exclude)
+
+            # Output each item for the caller to collect.
+            return $(
+                $Action
+                Convert-ADTFunctionParamsToArgArray @PSBoundParameters -Preset WinGet
+                '--accept-source-agreements'
+                '--accept-package-agreements'
+            )
+        }
+
+        # Define internal scriptblock for invoking WinGet. This is a
+        # scriptblock so Write-ADTLogEntry uses this function's source.
+        $wingetInvoker = {
+            return ,[System.String[]](& $wingetPath $wingetArgs 2>&1 | & {
+                begin
+                {
+                    $waleParams = @{PassThru = $true}
+                }
+
+                process
+                {
+                    if ($_ -match '^\w+')
+                    {
+                        $waleParams.Severity = if ($_ -match 'exit code: \d+') { 3 } else { 1 }
+                        Write-ADTLogEntry @waleParams -Message ($_.Trim() -replace '((?<![.:])|:)$', '.')
+                    }
+                }
+            })
+        }
+
         # Throw if an id, name, or moniker hasn't been provided. This is done like this
         # and not via parameter sets because this is what Install-WinGetPackage does.
         if (!$PSBoundParameters.ContainsKey('Id') -and !$PSBoundParameters.ContainsKey('Name') -and !$PSBoundParameters.ContainsKey('Moniker'))
@@ -176,11 +223,16 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
-        # Set up some default parameter values.
-        if (!$PSBoundParameters.ContainsKey('Scope'))
+        # Default the scope to "Machine" for the safety of users.
+        # It's super easy to install user-scoped apps into the SYSTEM
+        # user's account, and it's painful to diagnose/clean up.
+        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')))
         {
             $PSBoundParameters.Add('Scope', 'Machine')
         }
+
+        # Most of the time, we're only wanting a WinGet package anyway.
+        # Defaulting to the winget source speeds up operations.
         if (!$PSBoundParameters.ContainsKey('Source'))
         {
             $PSBoundParameters.Add('Source', 'winget')
@@ -213,12 +265,7 @@ function Invoke-ADTWinGetDeploymentOperation
         }
 
         # Set up arguments array for WinGet.
-        $wingetArgs = $(
-            $Action
-            $PSBoundParameters | Convert-ADTFunctionParamsToArgArray -Preset WinGet -Exclude Action
-            '--accept-source-agreements'
-            '--accept-package-agreements'
-        )
+        $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters
 
         # Generate action lookup table for verbage.
         $actionTranslator = @{
@@ -233,20 +280,14 @@ function Invoke-ADTWinGetDeploymentOperation
     {
         # Invoke WinGet and print each non-null line.
         Write-ADTLogEntry -Message "Executing [$wingetPath $wingetArgs]."
-        [System.String[]]$wingetOutput = & $wingetPath $wingetArgs 2>&1 | & {
-            begin
-            {
-                $waleParams = @{PassThru = $true}
-            }
+        $wingetOutput = & $wingetInvoker
 
-            process
-            {
-                if ($_ -match '^\w+')
-                {
-                    $waleParams.Severity = if ($_ -match 'exit code: \d+') { 3 } else { 1 }
-                    Write-ADTLogEntry @waleParams -Message ($_.Trim() -replace '((?<![.:])|:)$', '.')
-                }
-            }
+        # If package isn't found, rerun again without --Scope argument.
+        if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and $noScope)
+        {
+            Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
+            $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope
+            $wingetOutput = & $wingetInvoker
         }
 
         # Get the WinGet package code. If we didn't error out, assume zero as it's all we can do.

@@ -227,7 +227,7 @@ function Invoke-ADTWinGetOperation
                 {
                     # Going into bypass mode. Simulate WinGet output for the purpose of getting the app's version later on.
                     Write-ADTLogEntry -Message "Bypassing WinGet as `-DebugHashFailure` has been passed. This switch should only be used for debugging purposes."
-                    $wgAppData = & $wgExecPath search --Id $id --exact --accept-source-agreements | Convert-ADTWinGetListOutput
+                    $wgAppData = Convert-ADTWinGetQueryOutput -WinGetOutput (& $wgExecPath search --Id $id --exact --accept-source-agreements)
                     $wgOutput = [System.String[]]"Found $($wgAppData.Name) [$Id] Version $($wgAppData.Version)."
                     $Global:LASTEXITCODE = [ADTWinGetExitCode]::INSTALLER_HASH_MISMATCH.value__
                     $IgnoreHashFailure = $true
@@ -283,7 +283,7 @@ function Invoke-ADTWinGetOperation
                 elseif ($wgAction.Equals('list') -and !$Global:LASTEXITCODE)
                 {
                     # Convert the console output into a proper object.
-                    $wgAppData = $wgOutput | Convert-ADTWinGetListOutput
+                    $wgAppData = Convert-ADTWinGetQueryOutput -WinGetOutput $wgOutput
                     $wgLogBase = "$($wgAppData.Name) [$($wgAppData.Id)] $($wgAppData.Version)"
 
                     # Do some version checking of the found application.

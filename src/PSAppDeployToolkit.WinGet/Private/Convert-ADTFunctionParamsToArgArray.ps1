@@ -69,8 +69,8 @@ function Convert-ADTFunctionParamsToArgArray
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'BoundParametersPreset', ValueFromPipeline = $true)]
         [Parameter(Mandatory = $true, ParameterSetName = 'BoundParametersCustom', ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable]$BoundParameters,
+        [AllowEmptyCollection()]
+        [System.Collections.IDictionary]$BoundParameters,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'InvocationPreset', HelpMessage = 'Primary parameter', ValueFromPipeline = $true)]
         [Parameter(Mandatory = $true, ParameterSetName = 'InvocationCustom', HelpMessage = 'Primary parameter', ValueFromPipeline = $true)]
@@ -87,6 +87,8 @@ function Convert-ADTFunctionParamsToArgArray
         [ValidateNotNullOrEmpty()]
         [System.String]$HelpMessage,
 
+        [Parameter(Mandatory = $false, ParameterSetName = 'BoundParametersPreset', HelpMessage = 'Primary parameter')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'BoundParametersCustom', HelpMessage = 'Primary parameter')]
         [Parameter(Mandatory = $false, ParameterSetName = 'InvocationPreset', HelpMessage = 'Primary parameter')]
         [Parameter(Mandatory = $false, ParameterSetName = 'InvocationCustom', HelpMessage = 'Primary parameter')]
         [ValidateNotNullOrEmpty()]
@@ -151,11 +153,11 @@ function Convert-ADTFunctionParamsToArgArray
                 # For switches, we want to convert the $true/$false into 1/0 respectively.
                 if ($_.Value -isnot [System.Management.Automation.SwitchParameter])
                 {
-                    [System.String]::Format($string, $_.Name.ToUpper(), $_.Value -join $MultiValDelimiter).Split("`n").Trim()
+                    [System.String]::Format($string, $_.Key.ToUpper(), $_.Value -join $MultiValDelimiter).Split("`n").Trim()
                 }
                 else
                 {
-                    [System.String]::Format($string, $_.Name.ToUpper(), [System.UInt32][System.Boolean]$_.Value).Split("`n").Trim()
+                    [System.String]::Format($string, $_.Key.ToUpper(), [System.UInt32][System.Boolean]$_.Value).Split("`n").Trim()
                 }
             }
         }
@@ -166,7 +168,7 @@ function Convert-ADTFunctionParamsToArgArray
                 $notswitch = $_.Value -isnot [System.Management.Automation.SwitchParameter]
                 if ($notswitch -or $_.Value)
                 {
-                    $name = if ($Preset -eq 'PowerShell') { $_.Name } else { $_.Name.ToLower() }
+                    $name = if ($Preset -eq 'PowerShell') { $_.Key } else { $_.Key.ToLower() }
                     $value = if ($notswitch) { $_.Value -join $MultiValDelimiter }
                     [System.String]::Format($string, $name, $value).Split("`n").Trim() -replace $nullvalues
                 }
@@ -188,7 +190,7 @@ function Convert-ADTFunctionParamsToArgArray
                 }
 
                 # Process the parameters into an argument array and return to the caller.
-                return $BoundParameters.GetEnumerator().ForEach($script) -replace $invalidends | Where-Object { ![System.String]::IsNullOrWhiteSpace($_) }
+                return $BoundParameters.GetEnumerator().Where({ $Exclude -notcontains $_.Key }).ForEach($script) -replace $invalidends | Where-Object { ![System.String]::IsNullOrWhiteSpace($_) }
             }
             catch
             {

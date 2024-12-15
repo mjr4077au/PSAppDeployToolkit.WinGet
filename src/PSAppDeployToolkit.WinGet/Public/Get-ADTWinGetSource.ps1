@@ -74,7 +74,7 @@ function Get-ADTWinGetSource
                 }
 
                 # Convert the results into proper PowerShell data.
-                $wgSrcObjs = $wgSrcRes | Convert-ADTWinGetListOutput
+                $wgSrcObjs = Convert-ADTWinGetQueryOutput -WinGetOutput $wgSrcRes
 
                 # Filter by the name if specified.
                 if ($PSBoundParameters.ContainsKey('Name'))

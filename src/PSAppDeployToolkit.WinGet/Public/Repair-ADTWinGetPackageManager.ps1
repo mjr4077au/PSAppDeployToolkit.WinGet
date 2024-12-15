@@ -142,16 +142,7 @@ function Repair-ADTWinGetPackageManager
                     $wingetPath = Get-ADTWinGetPath
 
                     # Ensure winget.exe is above the minimum version.
-                    if (([System.Version]$wingetVer = (Get-ADTWinGetVersion -InformationAction SilentlyContinue).Trim('v')) -lt $Script:ADT.WinGetMinVersion)
-                    {
-                        $naerParams = @{
-                            Exception = [System.Activities.VersionMismatchException]::new("The installed WinGet version of [$wingetVer] is less than [$($Script:ADT.WinGetMinVersion)]. Please check the DISM pre-provisioning logs and try again.", [System.Activities.WorkflowIdentity]::new('winget.exe', $wingetVer, $wingetPath.FullName), [System.Activities.WorkflowIdentity]::new('winget.exe', $Script:ADT.WinGetMinVersion, $wingetPath.FullName))
-                            Category = [System.Management.Automation.ErrorCategory]::InvalidResult
-                            ErrorId = 'MicrosoftDesktopAppInstallerVersionError'
-                            RecommendedAction = "Please check the DISM pre-provisioning logs, then try again."
-                        }
-                        throw (New-ADTErrorRecord @naerParams)
-                    }
+                    Assert-ADTWinGetPackageManager
 
                     # Reset WinGet sources after updating. Helps with a corner-case issue discovered.
                     Reset-ADTWinGetSource -All

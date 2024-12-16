@@ -85,6 +85,23 @@ function Invoke-ADTWinGetOperation
     try
     {
         Assert-ADTWinGetPackageManager
+    }
+    catch
+    {
+        try
+        {
+            Invoke-ADTWinGetRepair
+            Assert-ADTWinGetPackageManager
+        }
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($_)
+        }
+    }
+
+    # Try to find the specified package.
+    try
+    {
         $wgPackage = Find-ADTWinGetPackage -Id $Id
     }
     catch

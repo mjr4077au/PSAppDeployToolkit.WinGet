@@ -79,6 +79,7 @@
         'Get-ADTWinGetVersion'
         'Install-ADTWinGetPackage'
         'Invoke-ADTWinGetOperation'
+        'Invoke-ADTWinGetRepair'
         'Repair-ADTWinGetPackage'
         'Repair-ADTWinGetPackageManager'
         'Reset-ADTWinGetSource'

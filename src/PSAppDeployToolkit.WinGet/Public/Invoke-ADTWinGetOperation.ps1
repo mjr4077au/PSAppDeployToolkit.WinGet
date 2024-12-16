@@ -29,12 +29,6 @@ function Invoke-ADTWinGetOperation
     .PARAMETER AllowRebootPassThru
         Allows the 3010 return code (requires restart) to be passed back to the parent process (e.g. SCCM) if detected from an installation. If 3010 is passed back to SCCM, a reboot prompt will be triggered.
 
-    .PARAMETER TerminalServerMode
-        Changes to "user install mode" and back to "user execute mode" for installing/uninstalling applications for Remote Desktop Session Hosts/Citrix servers.
-
-    .PARAMETER DisableLogging
-        Disables logging to file for the script. Default is: $false.
-
     .EXAMPLE
         powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeployMode Silent
 
@@ -73,13 +67,7 @@ function Invoke-ADTWinGetOperation
         [System.String]$DeployMode = 'Interactive',
 
         [Parameter(Mandatory = $false)]
-        [System.Management.Automation.SwitchParameter]$AllowRebootPassThru,
-
-        [Parameter(Mandatory = $false)]
-        [System.Management.Automation.SwitchParameter]$TerminalServerMode,
-
-        [Parameter(Mandatory = $false)]
-        [System.Management.Automation.SwitchParameter]$DisableLogging
+        [System.Management.Automation.SwitchParameter]$AllowRebootPassThru
     )
 
 
@@ -91,6 +79,7 @@ function Invoke-ADTWinGetOperation
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     $ProgressPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
     Set-StrictMode -Version 1
+    $mainError = $null
 
     # Confirm WinGet is healthy, then try to find the specified package.
     try
@@ -100,8 +89,7 @@ function Invoke-ADTWinGetOperation
     }
     catch
     {
-        $Host.UI.WriteErrorLine((Out-String -InputObject $_ -Width ([System.Int32]::MaxValue)))
-        exit 60008
+        $PSCmdlet.ThrowTerminatingError($_)
     }
 
 
@@ -116,14 +104,13 @@ function Invoke-ADTWinGetOperation
 
         # Script variables.
         DeployAppScriptFriendlyName = $MyInvocation.MyCommand.Name
+        DeployAppScriptVersion = $MyInvocation.MyCommand.Module.Version
         DeployAppScriptParameters = $PSBoundParameters
 
         # Script parameters.
         DeploymentType = $DeploymentType
         DeployMode = $DeployMode
         AllowRebootPassThru = $AllowRebootPassThru
-        TerminalServerMode = $TerminalServerMode
-        DisableLogging = $DisableLogging
     }
 
     function Install-ADTDeployment
@@ -225,8 +212,7 @@ function Invoke-ADTWinGetOperation
     }
     catch
     {
-        $Host.UI.WriteErrorLine((Out-String -InputObject $_ -Width ([System.Int32]::MaxValue)))
-        exit 60008
+        $PSCmdlet.ThrowTerminatingError($_)
     }
 
 
@@ -241,12 +227,15 @@ function Invoke-ADTWinGetOperation
     }
     catch
     {
-        Write-ADTLogEntry -Message ($mainErrorMessage = Resolve-ADTErrorRecord -ErrorRecord $_) -Severity 3
+        Write-ADTLogEntry -Message ($mainErrorMessage = Resolve-ADTErrorRecord -ErrorRecord ($mainError = $_)) -Severity 3
         Show-ADTDialogBox -Text $mainErrorMessage -Icon Stop | Out-Null
-        Close-ADTSession -ExitCode 60001
+        Close-ADTSession -ExitCode 60001 -Force
     }
     finally
     {
-        Remove-Module -Name PSAppDeployToolkit* -Force
+        if ($mainError)
+        {
+            $PSCmdlet.ThrowTerminatingError($mainError)
+        }
     }
 }

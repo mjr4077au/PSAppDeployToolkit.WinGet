@@ -82,7 +82,7 @@ function Get-ADTWinGetSource
                     if (!($wgSrcObj = $wgSrcObjs | & { process { if ($_.Name -eq $Name) { return $_ } } } | Select-Object -First 1))
                     {
                         $naerParams = @{
-                            Exception = [System.ArgumentException]::new("No source matches the given value [$Name].", $Name)
+                            Exception = [System.ArgumentException]::new("No source found matching the given value [$Name].")
                             Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
                             ErrorId = 'WinGetSourceNotFoundFailure'
                             TargetObject = $wgSrcObjs

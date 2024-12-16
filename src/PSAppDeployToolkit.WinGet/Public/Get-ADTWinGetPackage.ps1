@@ -13,6 +13,9 @@ function Get-ADTWinGetPackage
     .DESCRIPTION
         This command lists all of the packages installed on your system. The output includes packages installed from WinGet sources and packages installed by other methods. Packages that have package identifiers starting with `MSIX` or `ARP` could not be correlated to a WinGet source.
 
+    .PARAMETER Query
+        Specify one or more strings to search for. By default, the command searches all configured sources.
+
     .PARAMETER Command
         Specify the name of the command defined in the package manifest.
 
@@ -66,6 +69,10 @@ function Get-ADTWinGetPackage
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $false, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Command,

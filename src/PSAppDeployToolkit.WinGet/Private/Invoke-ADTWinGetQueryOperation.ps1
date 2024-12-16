@@ -15,6 +15,10 @@ function Invoke-ADTWinGetQueryOperation
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
         [System.String]$Command,
 
         [Parameter(Mandatory = $false)]

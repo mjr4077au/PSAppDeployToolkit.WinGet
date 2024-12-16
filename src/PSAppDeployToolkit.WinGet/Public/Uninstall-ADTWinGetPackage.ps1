@@ -13,6 +13,9 @@ function Uninstall-ADTWinGetPackage
     .DESCRIPTION
         This command uninstalls a WinGet package from your computer. The command includes parameters to specify values used to search for installed packages. By default, all string-based searches are case-insensitive substring searches. Wildcards are not supported.
 
+    .PARAMETER Query
+        Specify one or more strings to search for. By default, the command searches all configured sources.
+
     .PARAMETER Force
         Force the installer to run even when other checks WinGet would perform would prevent this action.
 
@@ -69,6 +72,10 @@ function Uninstall-ADTWinGetPackage
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $false, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$Force,
 

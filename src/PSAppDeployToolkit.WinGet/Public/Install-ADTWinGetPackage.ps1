@@ -13,6 +13,9 @@ function Install-ADTWinGetPackage
     .DESCRIPTION
         This command installs a WinGet package from a configured source. The command includes parameters to specify values used to search for packages in the configured sources. By default, the command searches the winget source. All string-based searches are case-insensitive substring searches. Wildcards are not supported.
 
+    .PARAMETER Query
+        Specify one or more strings to search for. By default, the command searches all configured sources.
+
     .PARAMETER AllowHashMismatch
         Allows you to download package even when the SHA256 hash for an installer or a dependency does not match the SHA256 hash in the WinGet package manifest.
 
@@ -102,6 +105,10 @@ function Install-ADTWinGetPackage
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $false, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$AllowHashMismatch,
 

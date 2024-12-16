@@ -15,6 +15,9 @@ function Repair-ADTWinGetPackage
 
         Note: Not all packages support repair.
 
+    .PARAMETER Query
+        Specify one or more strings to search for. By default, the command searches all configured sources.
+
     .PARAMETER Id
         Specify the package identifier to search for. The command does a case-insensitive full text match, rather than a substring match.
 
@@ -63,6 +66,10 @@ function Repair-ADTWinGetPackage
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $false, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Id,

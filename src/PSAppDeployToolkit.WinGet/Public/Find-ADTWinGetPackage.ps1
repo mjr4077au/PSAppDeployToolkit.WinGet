@@ -13,6 +13,9 @@ function Find-ADTWinGetPackage
     .DESCRIPTION
         Searches for packages from configured sources.
 
+    .PARAMETER Query
+        Specify one or more strings to search for. By default, the command searches all configured sources.
+
     .PARAMETER Command
         Specify the name of the command defined in the package manifest.
 
@@ -56,6 +59,10 @@ function Find-ADTWinGetPackage
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $false, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Command,
@@ -89,6 +96,19 @@ function Find-ADTWinGetPackage
     {
         # Initialize function.
         Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+
+        # Throw if at least one filtration method isn't provided.
+        if (!($PSBoundParameters.Keys -match '^(Query|Command|Id|Moniker|Name|Tag)$'))
+        {
+            $naerParams = @{
+                Exception = [System.ArgumentException]::new("At least one search parameter must be provided to this function.")
+                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
+                ErrorId = "WinGetPackageSearchError"
+                TargetObject = $PSBoundParameters
+                RecommendedAction = "Please review the specified parameters, then try again."
+            }
+            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
+        }
     }
 
     process

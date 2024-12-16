@@ -27,7 +27,7 @@
     Copyright = '(c) 2024 Mitch Richters. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = 'A baseline scaffolding for PSAppDeployToolkit modules. Based on Catesta with some fixes for correctness.'
+    Description = 'A PSAppDeployToolkit v4 extension module for WinGet.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.1.14393.0'

@@ -18,6 +18,10 @@ function Invoke-ADTWinGetQueryOperation
         [System.String]$Query,
 
         [Parameter(Mandatory = $false)]
+        [ValidateSet('Equals', 'EqualsCaseInsensitive')]
+        [System.String]$MatchOption,
+
+        [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Command,
 
@@ -59,7 +63,8 @@ function Invoke-ADTWinGetQueryOperation
     # Set up arguments array for WinGet.
     $wingetArgs = $(
         $Action
-        $PSBoundParameters | Convert-ADTFunctionParamsToArgArray -Preset WinGet -Exclude Action
+        $PSBoundParameters | Convert-ADTFunctionParamsToArgArray -Preset WinGet -Exclude Action, MatchOption
+        if ($MatchOption -eq 'Equals') { '--exact' }
         '--accept-source-agreements'
     )
 

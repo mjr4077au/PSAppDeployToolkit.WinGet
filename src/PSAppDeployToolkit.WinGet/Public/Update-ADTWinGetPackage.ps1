@@ -16,6 +16,9 @@ function Update-ADTWinGetPackage
     .PARAMETER Query
         Specify one or more strings to search for. By default, the command searches all configured sources.
 
+    .PARAMETER MatchOption
+        Specify matching logic used for search.
+
     .PARAMETER AllowHashMismatch
         Allows you to download package even when the SHA256 hash for an installer or a dependency does not match the SHA256 hash in the WinGet package manifest.
 
@@ -111,6 +114,10 @@ function Update-ADTWinGetPackage
         [Parameter(Mandatory = $false, Position = 0)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Query,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Equals', 'EqualsCaseInsensitive')]
+        [System.String]$MatchOption,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$AllowHashMismatch,

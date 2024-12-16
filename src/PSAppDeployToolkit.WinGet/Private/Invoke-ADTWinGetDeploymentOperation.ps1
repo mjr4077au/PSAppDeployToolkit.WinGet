@@ -111,6 +111,12 @@ function Invoke-ADTWinGetDeploymentOperation
         $paramDictionary.Add('Query', [System.Management.Automation.RuntimeDefinedParameter]::new(
                 'Query', [System.String], $(
                     [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                    [System.Management.Automation.ValidateSetAttribute]::new('Equals', 'EqualsCaseInsensitive')
+                )
+            ))
+        $paramDictionary.Add('Query', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                'Query', [System.String], $(
+                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
                     [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
                 )
             ))
@@ -179,12 +185,16 @@ function Invoke-ADTWinGetDeploymentOperation
             )
 
             # Ensure the action is also excluded.
-            $PSBoundParameters.Exclude = $('Action'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; $(if ($Exclude) { $Exclude } ))
+            $PSBoundParameters.Exclude = $('Action'; 'MatchOption'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; $(if ($Exclude) { $Exclude } ))
 
             # Output each item for the caller to collect.
             return $(
                 $Action
                 Convert-ADTFunctionParamsToArgArray @PSBoundParameters -Preset WinGet
+                if ($PSBoundParameters.ContainsKey('MatchOption') -and ($PSBoundParameters.MatchOption -eq 'Equals'))
+                {
+                    '--exact'
+                }
                 '--accept-source-agreements'
                 if ($Action -ne 'Uninstall')
                 {

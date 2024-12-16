@@ -16,6 +16,9 @@ function Find-ADTWinGetPackage
     .PARAMETER Query
         Specify one or more strings to search for. By default, the command searches all configured sources.
 
+    .PARAMETER MatchOption
+        Specify matching logic used for search.
+
     .PARAMETER Command
         Specify the name of the command defined in the package manifest.
 
@@ -62,6 +65,10 @@ function Find-ADTWinGetPackage
         [Parameter(Mandatory = $false, Position = 0)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Query,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Equals', 'EqualsCaseInsensitive')]
+        [System.String]$MatchOption,
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]

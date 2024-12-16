@@ -16,6 +16,9 @@ function Uninstall-ADTWinGetPackage
     .PARAMETER Query
         Specify one or more strings to search for. By default, the command searches all configured sources.
 
+    .PARAMETER MatchOption
+        Specify matching logic used for search.
+
     .PARAMETER Force
         Force the installer to run even when other checks WinGet would perform would prevent this action.
 
@@ -75,6 +78,10 @@ function Uninstall-ADTWinGetPackage
         [Parameter(Mandatory = $false, Position = 0)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Query,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Equals', 'EqualsCaseInsensitive')]
+        [System.String]$MatchOption,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$Force,

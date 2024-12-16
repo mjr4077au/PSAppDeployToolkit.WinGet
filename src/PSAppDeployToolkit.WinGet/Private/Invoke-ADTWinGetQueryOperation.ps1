@@ -60,6 +60,19 @@ function Invoke-ADTWinGetQueryOperation
         $PSCmdlet.ThrowTerminatingError($_)
     }
 
+    # Confirm the validity of the provided source.
+    if ($PSBoundParameters.ContainsKey('Source'))
+    {
+        try
+        {
+            $null = Get-ADTWinGetSource -Name $PSBoundParameters.Source
+        }
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($_)
+        }
+    }
+
     # Set up arguments array for WinGet.
     $wingetArgs = $(
         $Action

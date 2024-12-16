@@ -263,7 +263,18 @@ function Invoke-ADTWinGetDeploymentOperation
 
         # Most of the time, we're only wanting a WinGet package anyway.
         # Defaulting to the winget source speeds up operations.
-        if (!$PSBoundParameters.ContainsKey('Source'))
+        if ($PSBoundParameters.ContainsKey('Source'))
+        {
+            try
+            {
+                $null = Get-ADTWinGetSource -Name $PSBoundParameters.Source
+            }
+            catch
+            {
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
+        }
+        else
         {
             $PSBoundParameters.Add('Source', 'winget')
         }

@@ -57,22 +57,22 @@ if (!([System.Environment]::StackTrace.Split("`n") -like '*Microsoft.PowerShell.
     )
 }
 
-# Build out lookup table for all cmdlets used within module, starting with the core cmdlets.
-$CommandTable = [System.Collections.Generic.Dictionary[System.String, System.Management.Automation.CommandInfo]]::new()
-$ExecutionContext.SessionState.InvokeCommand.GetCmdlets() | & { process { if ($_.PSSnapIn -and $_.PSSnapIn.Name.Equals('Microsoft.PowerShell.Core') -and $_.PSSnapIn.IsDefault) { $CommandTable.Add($_.Name, $_) } } }
+# Set up lookup table for all cmdlets used within module, using PSAppDeployToolkit's as a basis.
+$CommandTable = [System.Collections.Generic.Dictionary[System.String, System.Management.Automation.CommandInfo]](& (& 'Microsoft.PowerShell.Core\Get-Command' -Name Get-ADTCommandTable -FullyQualifiedModule @{ ModuleName = 'PSAppDeployToolkit'; Guid = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.4' }))
 
 # Expand command lookup table with cmdlets used through this module.
 & {
-    $RequiredModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
+    # Import system modules and add their commands to the command table.
+    $SystemModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
         @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' }
-        @{ ModuleName = 'Dism'; Guid = '389c464d-8b8d-48e9-aafe-6d8a590d6798'; ModuleVersion = '1.0' }
-        @{ ModuleName = 'Microsoft.PowerShell.Archive'; Guid = 'eb74e8da-9ae2-482a-a648-e96550fb8733'; ModuleVersion = '1.0' }
-        @{ ModuleName = 'Microsoft.PowerShell.Management'; Guid = 'eefcb906-b326-4e99-9f54-8b4bb6ef3c6d'; ModuleVersion = '1.0' }
-        @{ ModuleName = 'Microsoft.PowerShell.Utility'; Guid = '1da87e53-152b-403e-98dc-74d7b4d63d59'; ModuleVersion = '1.0' }
-        @{ ModuleName = 'PSAppDeployToolkit'; Guid = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.4' }
+    )
+    (Import-Module -FullyQualifiedName $SystemModules -Global -Force -PassThru -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+
+    # Add commands from manifest-defined modules.
+    $RequiredModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
         @{ ModuleName = 'psyml'; Guid = 'a88e2e67-a937-4d98-a4d3-0b03d3ade169'; ModuleVersion = '1.0.0' }
     )
-    (Import-Module -FullyQualifiedName $RequiredModules -Global -Force -PassThru -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+    (Get-Module -FullyQualifiedName $RequiredModules -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
 }
 
 # Set required variables to ensure module functionality.

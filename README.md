@@ -14,23 +14,38 @@ This PowerShell module has been developed to match Microsoft.WinGet.Client's API
 
 More people ask for WinGet support in PSAppDeployToolkit than any other feature, so here's an implementation from one of PSAppDeployToolkit's very own developers.
 
-## Quick start
+## Getting Started
 
-Below are some quick commands to get you started. Full documentation for all commands within this module is available in the [docs](/docs) folder.
+### Via `Invoke-AppDeployToolkit.ps1` Deployment Script
 
-### Installing the module
+#### Downloading the module.
+
+1. Download the latest release from our [Releases](https://github.com/mjr4077au/PSAppDeployToolkit.WinGet/releases) page.
+2. Copy the `PSAppDeployToolkit.WinGet` folder into your deployment script directory for `Invoke-AppDeployToolkit.ps1` to automatically import.
+
+![image](https://github.com/user-attachments/assets/a25bdd7a-d162-4df5-ba16-e7c3e6dcaa39)
+
+---
+
+### Via PSGallery
+
+#### Installing the module
 
 ```PowerShell
 PS C:\> Install-Module -Name PSAppDeployToolkit.WinGet
 ```
 Installs this PowerShell module from the PSGallery.
 
-### Importing the module
+#### Importing the module
 
 ```PowerShell
 PS C:\> Import-Module -Name PSAppDeployToolkit.WinGet
 ```
 Imports this installed PowerShell module into your current runspace.
+
+## Using the Module
+
+Below are some quick commands to get you started. Full documentation for all commands within this module is available in the [docs](/docs) folder.
 
 ### Installing Microsoft Visual Studio Tools for Office
 

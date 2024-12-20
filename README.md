@@ -46,7 +46,7 @@ Imports this installed PowerShell module into your current runspace.
 
 #### Installing Microsoft Visual Studio Tools for Office
 
-```
+```PowerShell
 PS C:\> Install-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
 
 VERBOSE: [2024-12-20T15:10:36.5532477+11:00] [Invoke-ADTWinGetDeploymentOperation] :: Executing [C:\Users\user\AppData\Local\Microsoft\WindowsApps\winget.exe Install --id Microsoft.VSTOR --scope Machine --source winget --log
@@ -73,7 +73,7 @@ Installs the package with Id `Microsoft.VSTOR` onto the computer.
 
 #### Detecting/confirming Microsoft Visual Studio Tools for Office is installed
 
-```
+```PowerShell
 PS C:\> Get-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
 
 VERBOSE: [2024-12-20T15:11:47.1654182+11:00] [Invoke-ADTWinGetQueryOperation] :: Finding packages matching input criteria, please wait...
@@ -87,7 +87,7 @@ Returns an object of the installed package with Id `Microsoft.VSTOR` on this com
 
 #### Uninstalling Microsoft Visual Studio Tools for Office
 
-```
+```PowerShell
 PS C:\> Uninstall-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
 
 VERBOSE: [2024-12-20T15:09:15.2037222+11:00] [Invoke-ADTWinGetDeploymentOperation] :: Executing [C:\Users\user\AppData\Local\Microsoft\WindowsApps\winget.exe Uninstall --id Microsoft.VSTOR --scope Machine --source winget --log

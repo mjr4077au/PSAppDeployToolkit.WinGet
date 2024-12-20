@@ -57,7 +57,6 @@ function Invoke-ADTWinGetRepair
         # Script parameters.
         DeploymentType = 'Repair'
         DeployMode = 'Silent'
-        AllowRebootPassThru = $AllowRebootPassThru
     }
 
 
@@ -74,7 +73,7 @@ function Invoke-ADTWinGetRepair
     # Import the module and instantiate a new session.
     try
     {
-        $adtSession = Open-ADTSession -SessionState $ExecutionContext.SessionState @adtSession -PassThru
+        $adtSession = Open-ADTSession -SessionState $ExecutionContext.SessionState @adtSession @PSBoundParameters -PassThru
         $adtSession.InstallPhase = $adtSession.DeploymentType
     }
     catch

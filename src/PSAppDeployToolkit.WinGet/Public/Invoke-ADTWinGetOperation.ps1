@@ -123,11 +123,6 @@ function Invoke-ADTWinGetOperation
         DeployAppScriptFriendlyName = $MyInvocation.MyCommand.Name
         DeployAppScriptVersion = $MyInvocation.MyCommand.Module.Version
         DeployAppScriptParameters = $PSBoundParameters
-
-        # Script parameters.
-        DeploymentType = $DeploymentType
-        DeployMode = $DeployMode
-        AllowRebootPassThru = $AllowRebootPassThru
     }
 
     function Install-ADTDeployment
@@ -228,7 +223,7 @@ function Invoke-ADTWinGetOperation
     # Import the module and instantiate a new session.
     try
     {
-        $adtSession = Open-ADTSession -SessionState $ExecutionContext.SessionState @adtSession -PassThru
+        $adtSession = Open-ADTSession -SessionState $ExecutionContext.SessionState @adtSession @PSBoundParameters -PassThru
     }
     catch
     {

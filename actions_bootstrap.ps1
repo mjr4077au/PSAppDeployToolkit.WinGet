@@ -39,7 +39,7 @@ $modulesToInstall = New-Object System.Collections.Generic.List[object]
 # The star of the show
 [void]$modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSAppDeployToolkit'
-            ModuleVersion = '4.0.3'
+            ModuleVersion = '4.0.4'
         }))
 # https://github.com/bitrut94/psyml
 # Needed for WinGet hash failure override mode.

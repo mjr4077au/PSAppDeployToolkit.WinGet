@@ -14,37 +14,25 @@ This PowerShell module has been developed to match Microsoft.WinGet.Client's API
 
 More people ask for WinGet support in PSAppDeployToolkit than any other feature, so here's an implementation from one of PSAppDeployToolkit's very own developers.
 
-## Getting Started
+## Quick start
 
-### Prerequisites
+Below are some quick commands to get you started. Full documentation for all commands within this module is available in the [docs](/docs) folder.
 
-From PowerShell, run `& .\actions_bootstrap.ps1` to install the required pre-requisites. This is only needed once.
-
-### Building
-
-From PowerShell, run `Invoke-Build -File .\src\PSAppDeployToolkit.WinGet.build.ps1`, which will compile this module (and your own if you use this project as your basis).
-
-### Installation
-
-From PowerShell, run `Install-Module -Name PSAppDeployToolkit.WinGet`, which will install the module, as well as PSAppDeployToolkit if you don't already have it.
-
-### Quick start
-
-#### Installing the module
+### Installing the module
 
 ```PowerShell
 PS C:\> Install-Module -Name PSAppDeployToolkit.WinGet
 ```
 Installs this PowerShell module from the PSGallery.
 
-#### Importing the module
+### Importing the module
 
 ```PowerShell
 PS C:\> Import-Module -Name PSAppDeployToolkit.WinGet
 ```
 Imports this installed PowerShell module into your current runspace.
 
-#### Installing Microsoft Visual Studio Tools for Office
+### Installing Microsoft Visual Studio Tools for Office
 
 ```PowerShell
 PS C:\> Install-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
@@ -71,7 +59,7 @@ InstallerErrorCode : 0
 ```
 Installs the package with Id `Microsoft.VSTOR` onto the computer.
 
-#### Detecting/confirming Microsoft Visual Studio Tools for Office is installed
+### Detecting/confirming Microsoft Visual Studio Tools for Office is installed
 
 ```PowerShell
 PS C:\> Get-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
@@ -85,7 +73,7 @@ Microsoft Visual Studio 2010 Tools for Office Runtime (x64) Microsoft.VSTOR 10.0
 ```
 Returns an object of the installed package with Id `Microsoft.VSTOR` on this computer.
 
-#### Uninstalling Microsoft Visual Studio Tools for Office
+### Uninstalling Microsoft Visual Studio Tools for Office
 
 ```PowerShell
 PS C:\> Uninstall-ADTWinGetPackage -Id Microsoft.VSTOR -Verbose
@@ -108,7 +96,7 @@ UninstallerErrorCode : 0
 ```
 Uninstalls the package with Id `Microsoft.VSTOR` from the computer.
 
-#### Performing a full deployment of Microsoft Visual Studio Tools for Office
+### Performing a full deployment of Microsoft Visual Studio Tools for Office
 
 ```PowerShell
 PS C:\> Invoke-ADTWinGetOperation -Id Microsoft.VSTOR -DeployMode Silent
@@ -167,6 +155,20 @@ PS C:\> Invoke-ADTWinGetOperation -Id Microsoft.VSTOR -DeployMode Silent
 [2024-12-20 15:05:28.731] [Finalization] [Close-ADTSession] [Info] :: *******************************************************************************
 ```
 Instantiates a complete PSAppDeployToolkit deployment session, and installs package with Id `Microsoft.VSTOR` onto the computer.
+
+## Compiling the module from source
+
+### Prerequisites
+
+From PowerShell, run `& .\actions_bootstrap.ps1` to install the required pre-requisites. This is only needed once.
+
+### Building
+
+From PowerShell, run `Invoke-Build -File .\src\PSAppDeployToolkit.WinGet.build.ps1`, which will compile this module (and your own if you use this project as your basis).
+
+### Importing
+
+From PowerShell, run `Import-Module -Name .\src\Artifacts\Module\PSAppDeployToolkit.WinGet`, which will import the built module into your current PowerShell invocation.
 
 ## Author
 

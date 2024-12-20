@@ -402,39 +402,39 @@ function Invoke-ADTWinGetDeploymentOperation
             )
         }
 
-        # Get the WinGet package code. If we didn't error out, assume zero as it's all we can do.
-        $wingetPackageErrCode = if (($wingetErrLine = $($wingetOutput -match 'exit code: \d+')))
-        {
-            [System.Int32]($wingetErrLine -replace '^.+:\s(\d+)\.$', '$1')
-        }
-        else
-        {
-            $Global:LASTEXITCODE
-        }
-
         # Generate an exception if we received any failure.
-        $wingetException = if ($wingetErrLine)
+        $wingetException = if (($wingetErrLine = $($wingetOutput -match 'exit code: \d+')))
         {
-            [System.Runtime.InteropServices.ExternalException]::new($wingetErrLine, $wingetPackageErrCode)
+            [System.Runtime.InteropServices.ExternalException]::new($wingetErrLine, [System.Int32]($wingetErrLine -replace '^.+:\s(\d+)\.$', '$1'))
         }
         elseif ($Global:LASTEXITCODE)
         {
             # All this bullshit is to change crap like '0x800704c7 : unknown error.' to 'Unknown error.'...
             $wgErrorDef = if ([System.Enum]::IsDefined([ADTWinGetExitCode], $Global:LASTEXITCODE)) { [ADTWinGetExitCode]$Global:LASTEXITCODE }
             $wgErrorMsg = [System.Text.RegularExpressions.Regex]::Replace($wingetOutput[-1], '^0x\w{8}\s:\s(\w)', { $args[0].Groups[1].Value.ToUpper() })
-            [System.ComponentModel.Win32Exception]::new($Global:LASTEXITCODE, "WinGet operation finished with exit code 0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].")
+            [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code 0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].", $Global:LASTEXITCODE)
+        }
+
+        # Calculate the exit code of the deployment operation.
+        $wingetExitCode = if ($wingetException)
+        {
+            $wingetException.ErrorCode
+        }
+        else
+        {
+            $Global:LASTEXITCODE
+        }
+
+        # Update the session's exit code if one's in play.
+        if ($adtSession)
+        {
+            $adtSession.SetExitCode($wingetExitCode)
         }
 
         # The WinGet cmdlets don't throw on install failure, but we need to within PSADT. Try
         # to give as much information as we can to the caller, including installer exit code.
         if ($wingetException)
         {
-            # Update the session's exit code if one's in play.
-            if ($adtSession)
-            {
-                $adtSession.SetExitCode($wingetPackageErrCode)
-            }
-
             # Throw our determined exception out to the caller to handle.
             $naerParams = @{
                 Exception = $wingetException
@@ -456,8 +456,8 @@ function Invoke-ADTWinGetDeploymentOperation
             CorrelationData = [System.String]::Empty
             ExtendedErrorCode = $wingetException
             RebootRequired = $Global:LASTEXITCODE.Equals(1641) -or ($Global:LASTEXITCODE.Equals(3010))
-            Status = if ($wingetPackageErrCode) { "$($Action)Error" } else { 'Ok' }
-            "$($actionTranslator.$Action)ErrorCode" = $wingetPackageErrCode
+            Status = if ($wingetException) { "$($Action)Error" } else { 'Ok' }
+            "$($actionTranslator.$Action)ErrorCode" = $wingetExitCode
         }
     }
 }

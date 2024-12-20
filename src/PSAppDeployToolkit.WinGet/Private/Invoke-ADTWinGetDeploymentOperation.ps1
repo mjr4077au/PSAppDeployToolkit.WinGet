@@ -108,8 +108,8 @@ function Invoke-ADTWinGetDeploymentOperation
         }
 
         # Add in parameters used by all actions.
-        $paramDictionary.Add('Query', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Query', [System.String], $(
+        $paramDictionary.Add('MatchOption', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                'MatchOption', [System.String], $(
                     [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
                     [System.Management.Automation.ValidateSetAttribute]::new('Equals', 'EqualsCaseInsensitive')
                 )

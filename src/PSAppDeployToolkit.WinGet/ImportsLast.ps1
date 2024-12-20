@@ -15,11 +15,33 @@ New-Variable -Name ADT -Option Constant -Value ([pscustomobject]@{
         WinGetMinVersion = [System.Version]::new(1, 7, 10582)
         RunningAsSystem = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
         RunningAsAdmin = Test-ADTCallerIsAdmin
-        ArchLookupTable = ([ordered]@{
-                [PSADT.Shared.SystemArchitecture]::ARM64 = 'arm64'
-                [PSADT.Shared.SystemArchitecture]::AMD64 = 'x64'
-                [PSADT.Shared.SystemArchitecture]::i386 = 'x86'
-            }).AsReadOnly()
+        SystemArchitecture = switch ([PSADT.OperatingSystem.OSHelper]::GetArchitecture())
+        {
+            ([PSADT.Shared.SystemArchitecture]::ARM64)
+            {
+                'arm64'
+                break
+            }
+            ([PSADT.Shared.SystemArchitecture]::AMD64)
+            {
+                'x64'
+                break
+            }
+            ([PSADT.Shared.SystemArchitecture]::i386)
+            {
+                'x86'
+                break
+            }
+            default
+            {
+                throw [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new("The operating system of this computer is of an unsupported architecture."),
+                    'WinGetInvalidArchitectureError',
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $_
+                )
+            }
+        }
     })
 
 # Following the successful import, set the console's output encoding to UTF8 as required by WinGet's command line.

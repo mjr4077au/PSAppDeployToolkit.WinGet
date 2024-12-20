@@ -28,14 +28,13 @@ function Get-ADTWinGetHashMismatchInstaller
 
     # Get correct installation data from the manifest based on scope and system architecture.
     Write-ADTLogEntry -Message "Processing installer metadata from the package manifest."
-    $systemArch = $Script:ADT.ArchLookupTable.([PSADT.OperatingSystem.OSHelper]::GetArchitecture())
-    $nativeArch = $Manifest.Installers.Architecture -contains $systemArch
+    $nativeArch = $Manifest.Installers.Architecture -contains $Script:ADT.SystemArchitecture
     $cultureName = [System.Globalization.CultureInfo]::CurrentUICulture.Name
     $wgInstaller = $Manifest.Installers | Where-Object {
         (!$_.PSObject.Properties.Name.Contains('Scope') -or ($_.Scope -eq $Scope)) -and
         (!$_.PSObject.Properties.Name.Contains('InstallerLocale') -or ($_.InstallerLocale -eq $cultureName)) -and
         (!$InstallerType -or (($instType = $_ | Get-ADTWinGetHashMismatchInstallerType) -and ($instType -eq $InstallerType))) -and
-        ($_.Architecture.Equals($Architecture) -or ($haveArch = $_.Architecture -eq $systemArch) -or (!$haveArch -and !$nativeArch))
+        ($_.Architecture.Equals($Architecture) -or ($haveArch = $_.Architecture -eq $Script:ADT.SystemArchitecture) -or (!$haveArch -and !$nativeArch))
     }
 
     # Validate the output. The yoda notation is to keep PSScriptAnalyzer happy.

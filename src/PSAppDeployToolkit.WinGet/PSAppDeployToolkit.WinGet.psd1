@@ -111,7 +111,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags = @('psappdeploytoolkit', 'psadt', 'winget', 'intune', 'sccm', 'configmgr', 'mecm')
 
             # A URL to the license for this module.
             # LicenseUri = ''

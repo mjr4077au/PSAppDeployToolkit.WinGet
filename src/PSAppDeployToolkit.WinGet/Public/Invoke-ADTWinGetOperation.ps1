@@ -78,7 +78,7 @@ function Invoke-ADTWinGetOperation
     # Set strict error handling across entire operation.
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     $ProgressPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-    Set-StrictMode -Version 1
+    Set-StrictMode -Version 3
     $mainError = $null
 
     # Confirm WinGet is healthy, then try to find the specified package.

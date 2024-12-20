@@ -67,7 +67,7 @@ function Invoke-ADTWinGetRepair
     # Set strict error handling across entire operation.
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
     $ProgressPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
-    Set-StrictMode -Version 1
+    Set-StrictMode -Version 3
     $mainError = $null
 
     # Import the module and instantiate a new session.

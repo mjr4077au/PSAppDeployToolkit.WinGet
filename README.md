@@ -104,7 +104,7 @@ PS C:\> Invoke-ADTWinGetOperation -Id Microsoft.VSTOR -DeployMode Silent
 [2024-12-20 15:04:43.996] [Initialization] [Open-ADTSession] [Info] :: *******************************************************************************
 [2024-12-20 15:04:43.996] [Initialization] [Open-ADTSession] [Info] :: *******************************************************************************
 [2024-12-20 15:04:43.999] [Initialization] [Open-ADTSession] [Info] :: [MicrosoftVisualStudio2010ToolsforOfficeRuntime_10.0.60917] install started.
-[2024-12-20 15:04:44.000] [Initialization] [Open-ADTSession] [Info] :: [Invoke-ADTWinGetOperation] script version is [0.1.0].
+[2024-12-20 15:04:44.000] [Initialization] [Open-ADTSession] [Info] :: [Invoke-ADTWinGetOperation] script version is [1.0.0].
 [2024-12-20 15:04:44.002] [Initialization] [Open-ADTSession] [Info] :: The following parameters were passed to [Invoke-ADTWinGetOperation]: [-Id:'Microsoft.VSTOR' -DeployMode:'Silent'].
 [2024-12-20 15:04:44.004] [Initialization] [Open-ADTSession] [Info] :: [PSAppDeployToolkit] module version is [4.0.4].
 [2024-12-20 15:04:44.005] [Initialization] [Open-ADTSession] [Info] :: [PSAppDeployToolkit] module imported in [3.8406832] seconds.

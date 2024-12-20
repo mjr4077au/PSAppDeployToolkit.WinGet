@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.WinGet.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '1.0.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -126,7 +126,7 @@
             # ReleaseNotes = ''
 
             # Prerelease tag for PSGallery.
-            Prerelease = 'beta1'
+            Prerelease = 'rc1'
 
         } # End of PSData hashtable
 

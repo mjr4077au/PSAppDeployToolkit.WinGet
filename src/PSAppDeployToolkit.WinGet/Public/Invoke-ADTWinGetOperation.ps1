@@ -245,12 +245,12 @@ function Invoke-ADTWinGetOperation
     {
         Write-ADTLogEntry -Message ($mainErrorMessage = Resolve-ADTErrorRecord -ErrorRecord ($mainError = $_)) -Severity 3
         Show-ADTDialogBox -Text $mainErrorMessage -Icon Stop | Out-Null
-        Close-ADTSession -ExitCode 60001 -Force
+        Close-ADTSession -ExitCode 60001
         $Global:LASTEXITCODE = 60001
     }
     finally
     {
-        if ($mainError)
+        if ($mainError -and !([System.Environment]::GetCommandLineArgs() -eq '-NonInteractive'))
         {
             $PSCmdlet.ThrowTerminatingError($mainError)
         }

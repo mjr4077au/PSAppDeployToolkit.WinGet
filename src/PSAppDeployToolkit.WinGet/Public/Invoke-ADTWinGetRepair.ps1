@@ -100,7 +100,7 @@ function Invoke-ADTWinGetRepair
     }
     finally
     {
-        if ($mainError)
+        if ($mainError -and !([System.Environment]::GetCommandLineArgs() -eq '-NonInteractive'))
         {
             $PSCmdlet.ThrowTerminatingError($mainError)
         }

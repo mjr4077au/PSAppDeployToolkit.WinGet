@@ -466,7 +466,7 @@ Add-BuildTask Build {
         }
 
         # If our file isn't internal, redefine its command calls to be via the module's CommandTable.
-        if (!$file.BaseName.EndsWith('Internal') -and ($file.Name -notmatch '^Imports(First|Last)\.ps1$'))
+        if (!$file.BaseName.EndsWith('Internal'))
         {
             # Recursively get all CommandAst objects that have an unknown InvocationOperator (bare word within a script).
             $commandAsts = $scrAst.FindAll({ ($args[0] -is [System.Management.Automation.Language.CommandAst]) -and $args[0].InvocationOperator.Equals([System.Management.Automation.Language.TokenKind]::Unknown) }, $true)
@@ -489,7 +489,7 @@ Add-BuildTask Build {
                     }
 
                     # Throw if the CommandTable doesn't contain the command.
-                    if (!$Script:moduleCommandTable.Contains($_.Text))
+                    if (!$Script:moduleCommandTable.ContainsKey($_.Text))
                     {
                         throw "Unable to find the command [$($_.Text)] from [$($file.Name)] within the module's CommandTable."
                     }

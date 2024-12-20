@@ -12,8 +12,9 @@ Uninstalls a WinGet Package.
 ## SYNTAX
 
 ```powershell
-Uninstall-ADTWinGetPackage [-Force] [[-Id] <String>] [[-Log] <String>] [[-Mode] <String>] [[-Moniker] <String>]
- [[-Name] <String>] [[-Source] <String>] [[-Version] <String>] [<CommonParameters>]
+Uninstall-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-Force] [-Id <String>] [-Log <String>]
+ [-Mode <String>] [-Moniker <String>] [-Name <String>] [-Source <String>] [-Version <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,6 +55,39 @@ The results of the search a limited to matches with the version of `7.4.4.0`.
 
 ## PARAMETERS
 
+### -Query
+
+Specify one or more strings to search for.
+By default, the command searches all configured sources.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MatchOption
+
+Specify matching logic used for search.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Force
 
 Force the installer to run even when other checks WinGet would perform would prevent this action.
@@ -81,7 +115,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -99,7 +133,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -115,7 +149,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -132,7 +166,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -148,7 +182,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -164,7 +198,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -180,7 +214,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 7
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

@@ -16,6 +16,7 @@ module.exports = [
     'commands/Get-ADTWinGetVersion',
     'commands/Install-ADTWinGetPackage',
     'commands/Invoke-ADTWinGetOperation',
+    'commands/Invoke-ADTWinGetRepair',
     'commands/Repair-ADTWinGetPackage',
     'commands/Repair-ADTWinGetPackageManager',
     'commands/Reset-ADTWinGetSource',

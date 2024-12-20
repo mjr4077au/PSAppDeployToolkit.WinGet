@@ -1,6 +1,6 @@
 ---
-id: Invoke-ADTWinGetOperation
-title: Invoke-ADTWinGetOperation
+id: Invoke-ADTWinGetRepair
+title: Invoke-ADTWinGetRepair
 hide_title: false
 hide_table_of_contents: false
 ---
@@ -12,8 +12,7 @@ PSAppDeployToolkit - This script performs the installation or uninstallation of 
 ## SYNTAX
 
 ```powershell
-Invoke-ADTWinGetOperation [-Id] <String> [[-DeploymentType] <String>] [[-DeployMode] <String>]
- [-AllowRebootPassThru] [<CommonParameters>]
+Invoke-ADTWinGetRepair [-AllowRebootPassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,81 +28,10 @@ The script imports the PSAppDeployToolkit module which contains the logic and fu
 ### EXAMPLE 1
 
 ```powershell
-powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeployMode Silent
-```
-
-### EXAMPLE 2
-
-```powershell
 powershell.exe -File Invoke-AppDeployToolkit.ps1 -AllowRebootPassThru
 ```
 
-### EXAMPLE 3
-
-```powershell
-powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeploymentType Uninstall
-```
-
-### EXAMPLE 4
-
-```powershell
-Invoke-AppDeployToolkit.exe -DeploymentType "Install" -DeployMode "Silent"
-```
-
 ## PARAMETERS
-
-### -Id
-
-The WinGet package identifier for the deployment.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DeploymentType
-
-The type of deployment to perform.
-Default is: Install.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: Install
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DeployMode
-
-Specifies whether the installation should be run in Interactive, Silent, or NonInteractive mode.
-Default is: Interactive.
-Options: Interactive = Shows dialogs, Silent = No dialogs, NonInteractive = Very silent, i.e.
-no blocking apps.
-NonInteractive mode is automatically set if it is detected that the process is not user interactive.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: Interactive
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### -AllowRebootPassThru
 

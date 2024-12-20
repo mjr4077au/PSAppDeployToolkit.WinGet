@@ -12,11 +12,11 @@ Installs a newer version of a previously installed WinGet package.
 ## SYNTAX
 
 ```powershell
-Update-ADTWinGetPackage [-AllowHashMismatch] [[-Architecture] <String>] [[-Custom] <String>] [-Force]
- [[-Header] <String>] [[-Id] <String>] [-IncludeUnknown] [[-InstallerType] <String>] [[-Locale] <String>]
- [[-Location] <String>] [[-Log] <String>] [[-Mode] <String>] [[-Moniker] <String>] [[-Name] <String>]
- [[-Override] <String>] [[-Scope] <String>] [-SkipDependencies] [[-Source] <String>] [[-Version] <String>]
- [-DebugHashMismatch] [<CommonParameters>]
+Update-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-AllowHashMismatch]
+ [-Architecture <String>] [-Custom <String>] [-Force] [-Header <String>] [-Id <String>] [-IncludeUnknown]
+ [-InstallerType <String>] [-Locale <String>] [-Location <String>] [-Log <String>] [-Mode <String>]
+ [-Moniker <String>] [-Name <String>] [-Override <String>] [-Scope <String>] [-SkipDependencies]
+ [-Source <String>] [-Version <String>] [-DebugHashMismatch] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -58,6 +58,39 @@ The results of the search a limited to matches with the version of `7.4.4.0`.
 
 ## PARAMETERS
 
+### -Query
+
+Specify one or more strings to search for.
+By default, the command searches all configured sources.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MatchOption
+
+Specify matching logic used for search.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -AllowHashMismatch
 
 Allows you to download package even when the SHA256 hash for an installer or a dependency does not match the SHA256 hash in the WinGet package manifest.
@@ -84,7 +117,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -105,7 +138,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -137,7 +170,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -154,7 +187,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -186,7 +219,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -204,7 +237,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -221,7 +254,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 7
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -239,7 +272,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 8
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -255,7 +288,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 9
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -272,7 +305,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 10
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -288,7 +321,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 11
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -309,7 +342,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 12
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -325,7 +358,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 13
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -357,7 +390,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 14
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -373,7 +406,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 15
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

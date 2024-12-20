@@ -46,3 +46,6 @@ New-Variable -Name ADT -Option Constant -Value ([pscustomobject]@{
 
 # Following the successful import, set the console's output encoding to UTF8 as required by WinGet's command line.
 [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# Announce successful importation of module.
+Write-ADTLogEntry -Message "Module [PSAppDeployToolkit.WinGet] imported successfully." -ScriptSection Initialization -Source 'PSAppDeployToolkit.WinGet.psm1'

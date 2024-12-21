@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'psyml.psm1'
+RootModule = "$PSScriptRoot\$(if ($PSEdition -eq 'Desktop') { 'net4.8' } else { 'netstandard2.1' })\psyml.dll"
 
 # Version number of this module.
 ModuleVersion = '1.0.0'
@@ -87,7 +87,7 @@ AliasesToExport = @()
 # ModuleList = @()
 
 # List of all files packaged with this module
-FileList = 'psyml.psd1', 'psyml.psm1', 'net4.8\psyml.dll', 
+FileList = 'psyml.psd1', 'net4.8\psyml.dll', 
                'net4.8\psyml.dll-Help.xml', 'net4.8\psyml.xml', 
                'net4.8\YamlDotNet.dll', 'netstandard2.1\psyml.dll', 
                'netstandard2.1\psyml.dll-Help.xml', 'netstandard2.1\psyml.xml', 

@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>psyml</name>
+    </assembly>
+    <members>
+        <member name="T:psyml.ConvertFromYamlCommand">
+             <summary>
+             <para type="synopsis">
+                 Converts a YAML-formatted string to a custom object, hash table or ordered dictionary.
+             </para>
+             <para type="description">
+                 The ConvertFrom-Yaml cmdlet converts a YAML formatted string to a custom PSCustomObject object that has a property for each field in the YAML string.
+                 YAML is commonly used for configuration files and in applications where data is being stored or transmitted.
+             </para>
+             </summary>
+             <example>
+                 <para>Convert a YAML string to a custom object</para>
+                 <para>
+                     This example shows how to use the ConvertFrom-Yaml cmdlet to convert a YAML file to a PowerShell custom object.
+                 </para>
+                 <code>
+                     PS > Get-Content YamlFile.yml | ConvertFrom-Yaml
+                 </code>
+                 <para>
+                     The command uses Get-Content cmdlet to get the strings in a YAML file. Then it uses the pipeline operator to send the delimited string to the ConvertFrom-Json cmdlet,
+                     which converts it to a custom object.
+                 </para>
+             </example>
+             <example>
+                 <para>Convert a YAML string to a hash table</para>
+                 <para>
+                     This command shows an example where the -AsHashtable switch can overcome limitations of the command.
+                 </para>
+                 <code>
+                     PS > @"
+                     key: value1
+                     Key: value2
+                     "@ | ConvertFrom-Yaml -AsHashtable
+                 </code>
+                 <para>
+                     The YAML string contains two key value pairs with keys that differ only in casing. Without the switch, the command would have thrown an error.
+                 </para>
+             </example>
+             <example>
+                 <para>Convert a YAML string to a ordered dictionary</para>
+                 <para>
+                     This command shows an example where the -AsOrderedDictionary switch can overcome limitations of the command while preserving order of keys.
+                 </para>
+                 <code>
+                     PS > @"
+                     key: value1
+                     Key: value2
+                     "@ | ConvertFrom-Yaml -AsOrderedDictionary
+                 </code>
+                 <para>
+                     The YAML string contains two key value pairs with keys that differ only in casing. Without the switch, the command would have thrown an error.
+                 </para>
+             </example>
+             <example>
+                 <para>Convert a DateTime object to a YAML object</para>
+                 <para>
+                     This command uses the ConvertTo-Yaml and ConvertFrom-Yaml cmdlets to convert a DateTime object from the Get-Date cmdlet to a Yaml object then to a PSCustomObject.
+                 </para>
+                 <code>
+                     PS > Get-Date | Select-Object -Property * | ConvertTo-Yaml | ConvertFrom-Yaml
+            
+                     DisplayHint : DateTime
+                     DateTime    : poniedziałek, 14 grudnia 2020 22:10:03
+                     Date        : 2020-12-14T00:00:00.0000000+01:00
+                     Day         : 14
+                     DayOfWeek   : Monday
+                     DayOfYear   : 349
+                     Hour        : 22
+                     Kind        : Local
+                     Millisecond : 418
+                     Minute      : 10
+                     Month       : 12
+                     Second      : 3
+                     Ticks       : 637435806034183959
+                     TimeOfDay   : 22:10:03.4183959
+                     Year        : 2020
+                 </code>
+                 <para>
+                     The example uses the Select-Object cmdlet to get all of the properties of the DateTime object. It uses the ConvertTo-Yaml cmdlet to convert the DateTime object
+                     to a string formatted as a YAML object and the ConvertFrom-Yaml cmdlet to convert the YAML-formatted string to a PSCustomObject object.
+                 </para>
+             </example>
+             <example>
+                 <para>Round-trip a single element array</para>
+                 <para>
+                     This command shows an example where the -NoEnumerate switch is used to round-trip a single element YAML array.
+                 </para>
+                 <code>
+                     PS > '- 1' | ConvertFrom-Yaml | ConvertTo-Yaml
+                     1
+                     PS > '- 1' | ConvertFrom-Yaml -NoEnumerate | ConvertTo-Yaml
+                     - 1
+                 </code>
+                 <para>
+                     The YAML string contains an array with a single element. Without the switch, converting the YAML to a PSObject and then converting it back
+                     with the ConvertTo-Yaml command results in a single integer.
+                 </para>
+             </example>
+        </member>
+        <member name="P:psyml.ConvertFromYamlCommand.InputObject">
+            <summary>
+            <para type="description">
+                Specifies the YAML strings to convert to YAML objects. Enter a variable that contains the string, or type a command or expression that gets the string.
+                You can also pipe a string to ConvertFrom-Yaml. The InputObject parameter is required, but its value can be an empty string. When the input object is
+                an empty string, ConvertFrom-Yaml does not generate any output. The InputObject value cannot be $null.
+            </para>
+            </summary>
+        </member>
+        <member name="F:psyml.ConvertFromYamlCommand._inputObjectBuffer">
+            <summary>
+                InputObjectBuffer buffers all InputObject contents available in the pipeline.
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertFromYamlCommand.AsHashtable">
+            <summary>
+            <para type="description">
+                Converts the YAML to a hash table object.
+            </para>
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertFromYamlCommand.AsOrderedDictionary">
+            <summary>
+            <para type="description">
+                Converts the YAML to a ordered dictionary object.
+            </para>
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertFromYamlCommand.NoEnumerate">
+            <summary>
+            <para type="description">
+                Specifies that output is not enumerated.
+                Setting this parameter causes arrays to be sent as a single object instead of sending every element separately.
+                This guarantees that YAML can be round-tripped via ConvertTo-Yaml.
+            </para>
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertFromYamlCommand.ProcessRecord">
+            <summary>
+                Buffers InputObjet contents available in the pipeline.
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertFromYamlCommand.EndProcessing">
+            <summary>
+                The main execution method for the ConvertFrom-Yaml command.
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertFromYamlCommand.ConvertFromYamlHelper(System.String)">
+            <summary>
+                ConvertFromYamlHelper is a helper method to convert the Yaml input to .Net Type.
+            </summary>
+            <param name="input">Input string.</param>
+        </member>
+        <member name="T:psyml.ConvertToYamlCommand">
+            <summary>
+            <para type="synopsis">
+                Converts an object to a YAML-formatted string.
+            </para>
+            <para type="description">
+                The ConvertTo-Yaml cmdlet converts (almost) any .NET object to a string in YAML format. The properties are converted to field names,
+                the field values are converted to property values, and the methods are removed. You can then use the ConvertFrom-Yaml cmdlet to convert
+                a YAML-formatted string to a YAML object, which is easily managed in PowerShell.
+            </para>
+            </summary>
+            <example>
+                <para>Convert object to YAML string</para>
+                <para>
+                    This command uses the ConvertTo-Yaml cmdlet to convert a GregorianCalendar object to a YAML-formatted string.
+                </para>
+                <code>
+                    PS > (Get-UICulture).Calendar | ConvertTo-Yaml
+                    MinSupportedDateTime: 0001-01-01T00:00:00.0000000
+                    MaxSupportedDateTime: 9999-12-31T23:59:59.9999999
+                    AlgorithmType: SolarCalendar
+                    CalendarType: Localized
+                    Eras:
+                    - 1
+                    TwoDigitYearMax: 2029
+                    IsReadOnly: true
+                </code>
+            </example>
+            <example>
+                <para>Convert object to list of YAML strings</para>
+                <code>
+                    PS > 1 | ConvertTo-Yaml
+                    1
+                    PS > 1 | ConvertTo-Yaml -AsArray
+                    - 1
+                </code>
+                <para>
+                    This example shows the output from ConvertTo-Yaml cmdlet with and without the AsArray switch parameter.
+                    You can see the second output is preceded by the dash.
+                </para>
+            </example>
+            <example>
+                <para>Convert object to JSON compatible YAML strings</para>
+                <code>
+                    PS > @{key = 'value'} | ConvertTo-Yaml -JsonCompatible
+                    {"key": "value"}
+                </code>
+                <para>
+                    This example shows the output from ConvertTo-Yaml cmdlet with the JsonCompatible switch parameter.
+                    You can see that the output is compatible with the JSON format.
+                </para>
+            </example>
+        </member>
+        <member name="P:psyml.ConvertToYamlCommand.InputObject">
+            <summary>
+            <para type="description">
+                Specifies the objects to convert to YAML format. Enter a variable that contains the objects, or type a command or expression that gets
+                the objects. You can also pipe an object to ConvertTo-Yaml. The InputObject parameter is required, but its value can be null ($null)
+                or an empty string. When the input object is $null, ConvertTo-Yaml returns null in YAML notation. When the input object is an empty string,
+                ConvertTo-Yaml returns YAML document with empty string (this should be fixed).
+            </para>
+            </summary>
+        </member>
+        <member name="F:psyml.ConvertToYamlCommand._inputObjectBuffer">
+            <summary>
+                InputObjectBuffer buffers all InputObject contents available in the pipeline.
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertToYamlCommand.JsonCompatible">
+            <summary>
+            <para type="description">
+                Converts object to JSON compatible YAML string.
+            </para>
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertToYamlCommand.EnableAliases">
+            <summary>
+            <para type="description">
+                Enables YAML aliases on output string.
+            </para>
+            </summary>
+        </member>
+        <member name="P:psyml.ConvertToYamlCommand.AsArray">
+            <summary>
+            <para type="description">
+                Forces the output to be array type.
+            </para>
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertToYamlCommand.ProcessRecord">
+            <summary>
+                Buffers InputObjet contents available in the pipeline.
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertToYamlCommand.EndProcessing">
+            <summary>
+                The main execution method for the ConvertTo-Yaml command.
+            </summary>
+        </member>
+        <member name="M:psyml.ConvertToYamlCommand.ConvertToYamlHelper(System.Object)">
+            <summary>
+                ConvertToYamlHelper is a helper method to convert the .Net Type to Yaml string.
+            </summary>
+            <param name="input">Input string.</param>
+        </member>
+    </members>
+</doc>

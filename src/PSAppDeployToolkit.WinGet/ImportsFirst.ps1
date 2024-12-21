@@ -62,17 +62,12 @@ $CommandTable = [System.Collections.Generic.Dictionary[System.String, System.Man
 
 # Expand command lookup table with cmdlets used through this module.
 & {
-    # Import system modules and add their commands to the command table.
-    $SystemModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
-        @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' }
-    )
-    (Import-Module -FullyQualifiedName $SystemModules -Global -Force -PassThru -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
-
-    # Add commands from manifest-defined modules.
+    # Import required modules and add their commands to the command table.
     $RequiredModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
-        @{ ModuleName = 'psyml'; Guid = 'a88e2e67-a937-4d98-a4d3-0b03d3ade169'; ModuleVersion = '1.0.0' }
+        @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' }
+        @{ ModuleName = "$PSScriptRoot\Submodules\psyml"; Guid = 'a88e2e67-a937-4d98-a4d3-0b03d3ade169'; ModuleVersion = '1.0.0' }
     )
-    (Get-Module -FullyQualifiedName $RequiredModules -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+    (Import-Module -FullyQualifiedName $RequiredModules -Global -Force -PassThru -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
 }
 
 # Set required variables to ensure module functionality.

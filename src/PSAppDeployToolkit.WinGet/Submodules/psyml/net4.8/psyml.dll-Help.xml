@@ -1,0 +1,424 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml" xmlns="http://msh">
+  <!-- Cmdlet: ConvertFrom-Yaml -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>ConvertFrom-Yaml</command:name>
+      <command:verb>ConvertFrom</command:verb>
+      <command:noun>Yaml</command:noun>
+      <maml:description>
+        <maml:para>Converts a YAML-formatted string to a custom object, hash table or ordered dictionary.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The ConvertFrom-Yaml cmdlet converts a YAML formatted string to a custom PSCustomObject object that has a property for each field in the YAML string. YAML is commonly used for configuration files and in applications where data is being stored or transmitted.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>ConvertFrom-Yaml</maml:name>
+        <!-- Parameter: InputObject -->
+        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="0">
+          <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>Specifies the YAML strings to convert to YAML objects. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to ConvertFrom-Yaml. The InputObject parameter is required, but its value can be an empty string. When the input object is an empty string, ConvertFrom-Yaml does not generate any output. The InputObject value cannot be $null.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: AsHashtable -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>AsHashtable</maml:name>
+          <maml:description>
+            <maml:para>Converts the YAML to a hash table object.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: AsOrderedDictionary -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="Ordered">
+          <maml:name>AsOrderedDictionary</maml:name>
+          <maml:description>
+            <maml:para>Converts the YAML to a ordered dictionary object.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: NoEnumerate -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>NoEnumerate</maml:name>
+          <maml:description>
+            <maml:para>Specifies that output is not enumerated. Setting this parameter causes arrays to be sent as a single object instead of sending every element separately. This guarantees that YAML can be round-tripped via ConvertTo-Yaml.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: InputObject -->
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="0">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>Specifies the YAML strings to convert to YAML objects. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to ConvertFrom-Yaml. The InputObject parameter is required, but its value can be an empty string. When the input object is an empty string, ConvertFrom-Yaml does not generate any output. The InputObject value cannot be $null.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: AsHashtable -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>AsHashtable</maml:name>
+        <maml:description>
+          <maml:para>Converts the YAML to a hash table object.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: AsOrderedDictionary -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="Ordered">
+        <maml:name>AsOrderedDictionary</maml:name>
+        <maml:description>
+          <maml:para>Converts the YAML to a ordered dictionary object.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named" aliases="Ordered">
+        <maml:name>Ordered</maml:name>
+        <maml:description>
+          <maml:para>Converts the YAML to a ordered dictionary object.</maml:para>
+          <maml:para>This is an alias of the AsOrderedDictionary parameter.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: NoEnumerate -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>NoEnumerate</maml:name>
+        <maml:description>
+          <maml:para>Specifies that output is not enumerated. Setting this parameter causes arrays to be sent as a single object instead of sending every element separately. This guarantees that YAML can be round-tripped via ConvertTo-Yaml.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <maml:description>
+          <maml:para>Specifies the YAML strings to convert to YAML objects. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to ConvertFrom-Yaml. The InputObject parameter is required, but its value can be an empty string. When the input object is an empty string, ConvertFrom-Yaml does not generate any output. The InputObject value cannot be $null.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues />
+    <command:examples>
+      <command:example>
+        <maml:title>----------  EXAMPLE 1  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert a YAML string to a custom object</maml:para>
+          <maml:para>This example shows how to use the ConvertFrom-Yaml cmdlet to convert a YAML file to a PowerShell custom object.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; Get-Content YamlFile.yml | ConvertFrom-Yaml</dev:code>
+        <dev:remarks>
+          <maml:para>The command uses Get-Content cmdlet to get the strings in a YAML file. Then it uses the pipeline operator to send the delimited string to the ConvertFrom-Json cmdlet, which converts it to a custom object.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 2  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert a YAML string to a hash table</maml:para>
+          <maml:para>This command shows an example where the -AsHashtable switch can overcome limitations of the command.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; @"
+key: value1
+Key: value2
+"@ | ConvertFrom-Yaml -AsHashtable</dev:code>
+        <dev:remarks>
+          <maml:para>The YAML string contains two key value pairs with keys that differ only in casing. Without the switch, the command would have thrown an error.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert a YAML string to a ordered dictionary</maml:para>
+          <maml:para>This command shows an example where the -AsOrderedDictionary switch can overcome limitations of the command while preserving order of keys.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; @"
+key: value1
+Key: value2
+"@ | ConvertFrom-Yaml -AsOrderedDictionary</dev:code>
+        <dev:remarks>
+          <maml:para>The YAML string contains two key value pairs with keys that differ only in casing. Without the switch, the command would have thrown an error.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 4  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert a DateTime object to a YAML object</maml:para>
+          <maml:para>This command uses the ConvertTo-Yaml and ConvertFrom-Yaml cmdlets to convert a DateTime object from the Get-Date cmdlet to a Yaml object then to a PSCustomObject.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; Get-Date | Select-Object -Property * | ConvertTo-Yaml | ConvertFrom-Yaml
+
+DisplayHint : DateTime
+DateTime    : poniedziałek, 14 grudnia 2020 22:10:03
+Date        : 2020-12-14T00:00:00.0000000+01:00
+Day         : 14
+DayOfWeek   : Monday
+DayOfYear   : 349
+Hour        : 22
+Kind        : Local
+Millisecond : 418
+Minute      : 10
+Month       : 12
+Second      : 3
+Ticks       : 637435806034183959
+TimeOfDay   : 22:10:03.4183959
+Year        : 2020</dev:code>
+        <dev:remarks>
+          <maml:para>The example uses the Select-Object cmdlet to get all of the properties of the DateTime object. It uses the ConvertTo-Yaml cmdlet to convert the DateTime object to a string formatted as a YAML object and the ConvertFrom-Yaml cmdlet to convert the YAML-formatted string to a PSCustomObject object.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 5  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Round-trip a single element array</maml:para>
+          <maml:para>This command shows an example where the -NoEnumerate switch is used to round-trip a single element YAML array.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; '- 1' | ConvertFrom-Yaml | ConvertTo-Yaml
+1
+PS &gt; '- 1' | ConvertFrom-Yaml -NoEnumerate | ConvertTo-Yaml
+- 1</dev:code>
+        <dev:remarks>
+          <maml:para>The YAML string contains an array with a single element. Without the switch, converting the YAML to a PSObject and then converting it back with the ConvertTo-Yaml command results in a single integer.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+  </command:command>
+  <!-- Cmdlet: ConvertTo-Yaml -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>ConvertTo-Yaml</command:name>
+      <command:verb>ConvertTo</command:verb>
+      <command:noun>Yaml</command:noun>
+      <maml:description>
+        <maml:para>Converts an object to a YAML-formatted string.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The ConvertTo-Yaml cmdlet converts (almost) any .NET object to a string in YAML format. The properties are converted to field names, the field values are converted to property values, and the methods are removed. You can then use the ConvertFrom-Yaml cmdlet to convert a YAML-formatted string to a YAML object, which is easily managed in PowerShell.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>ConvertTo-Yaml</maml:name>
+        <!-- Parameter: InputObject -->
+        <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="0" aliases="Data">
+          <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>Specifies the objects to convert to YAML format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to ConvertTo-Yaml. The InputObject parameter is required, but its value can be null ($null) or an empty string. When the input object is $null, ConvertTo-Yaml returns null in YAML notation. When the input object is an empty string, ConvertTo-Yaml returns YAML document with empty string (this should be fixed).</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">object</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Object</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: AsArray -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>AsArray</maml:name>
+          <maml:description>
+            <maml:para>Forces the output to be array type.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: EnableAliases -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>EnableAliases</maml:name>
+          <maml:description>
+            <maml:para>Enables YAML aliases on output string.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: JsonCompatible -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>JsonCompatible</maml:name>
+          <maml:description>
+            <maml:para>Converts object to JSON compatible YAML string.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: InputObject -->
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="0" aliases="Data">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>Specifies the objects to convert to YAML format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to ConvertTo-Yaml. The InputObject parameter is required, but its value can be null ($null) or an empty string. When the input object is $null, ConvertTo-Yaml returns null in YAML notation. When the input object is an empty string, ConvertTo-Yaml returns YAML document with empty string (this should be fixed).</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">object</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <command:parameter required="true" globbing="false" pipelineInput="true (ByValue)" position="0" aliases="Data">
+        <maml:name>Data</maml:name>
+        <maml:description>
+          <maml:para>Specifies the objects to convert to YAML format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to ConvertTo-Yaml. The InputObject parameter is required, but its value can be null ($null) or an empty string. When the input object is $null, ConvertTo-Yaml returns null in YAML notation. When the input object is an empty string, ConvertTo-Yaml returns YAML document with empty string (this should be fixed).</maml:para>
+          <maml:para>This is an alias of the InputObject parameter.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">object</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: JsonCompatible -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>JsonCompatible</maml:name>
+        <maml:description>
+          <maml:para>Converts object to JSON compatible YAML string.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: EnableAliases -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>EnableAliases</maml:name>
+        <maml:description>
+          <maml:para>Enables YAML aliases on output string.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: AsArray -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>AsArray</maml:name>
+        <maml:description>
+          <maml:para>Forces the output to be array type.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <maml:description>
+          <maml:para>Specifies the objects to convert to YAML format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to ConvertTo-Yaml. The InputObject parameter is required, but its value can be null ($null) or an empty string. When the input object is $null, ConvertTo-Yaml returns null in YAML notation. When the input object is an empty string, ConvertTo-Yaml returns YAML document with empty string (this should be fixed).</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues />
+    <command:examples>
+      <command:example>
+        <maml:title>----------  EXAMPLE 1  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert object to YAML string</maml:para>
+          <maml:para>This command uses the ConvertTo-Yaml cmdlet to convert a GregorianCalendar object to a YAML-formatted string.</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; (Get-UICulture).Calendar | ConvertTo-Yaml
+MinSupportedDateTime: 0001-01-01T00:00:00.0000000
+MaxSupportedDateTime: 9999-12-31T23:59:59.9999999
+AlgorithmType: SolarCalendar
+CalendarType: Localized
+Eras:
+- 1
+TwoDigitYearMax: 2029
+IsReadOnly: true</dev:code>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 2  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert object to list of YAML strings</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; 1 | ConvertTo-Yaml
+1
+PS &gt; 1 | ConvertTo-Yaml -AsArray
+- 1</dev:code>
+        <dev:remarks>
+          <maml:para>This example shows the output from ConvertTo-Yaml cmdlet with and without the AsArray switch parameter. You can see the second output is preceded by the dash.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
+        <maml:introduction>
+          <maml:para>Convert object to JSON compatible YAML strings</maml:para>
+        </maml:introduction>
+        <dev:code>PS &gt; @{key = 'value'} | ConvertTo-Yaml -JsonCompatible
+{"key": "value"}</dev:code>
+        <dev:remarks>
+          <maml:para>This example shows the output from ConvertTo-Yaml cmdlet with the JsonCompatible switch parameter. You can see that the output is compatible with the JSON format.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+  </command:command>
+</helpItems>

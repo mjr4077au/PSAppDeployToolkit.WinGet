@@ -412,7 +412,7 @@ function Invoke-ADTWinGetDeploymentOperation
             # All this bullshit is to change crap like '0x800704c7 : unknown error.' to 'Unknown error.'...
             $wgErrorDef = if ([System.Enum]::IsDefined([ADTWinGetExitCode], $Global:LASTEXITCODE)) { [ADTWinGetExitCode]$Global:LASTEXITCODE }
             $wgErrorMsg = [System.Text.RegularExpressions.Regex]::Replace($wingetOutput[-1], '^0x\w{8}\s:\s(\w)', { $args[0].Groups[1].Value.ToUpper() })
-            [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code 0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"}) [$($wgErrorMsg.TrimEnd('.'))].", $Global:LASTEXITCODE)
+            [System.Runtime.InteropServices.ExternalException]::new("WinGet operation finished with exit code [0x$($Global:LASTEXITCODE.ToString('X'))$(if ($wgErrorDef) {" ($wgErrorDef)"})]: $($wgErrorMsg.TrimEnd('.')).", $Global:LASTEXITCODE)
         }
 
         # Calculate the exit code of the deployment operation.

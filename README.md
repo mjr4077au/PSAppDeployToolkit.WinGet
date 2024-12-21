@@ -47,6 +47,20 @@ Imports this installed PowerShell module into your current runspace.
 
 Below are some quick commands to get you started. Full documentation for all commands within this module is available in the [docs](/docs) folder.
 
+### Repairing WinGet (making sure it's preprovisioned properly)
+
+```PowerShell
+PS C:\> Repair-ADTWinGetPackageManager -Verbose
+
+VERBOSE: [2024-12-21T11:06:14.0227709+11:00] [Repair-ADTWinGetPackageManager] :: Confirming whether [Microsoft.DesktopAppInstaller] is installed, please wait...
+VERBOSE: [2024-12-21T11:06:14.0553455+11:00] [Repair-ADTWinGetPackageManager] :: Successfully confirmed that [Microsoft.DesktopAppInstaller] is installed on system.
+VERBOSE: [2024-12-21T11:06:14.0593472+11:00] [Repair-ADTWinGetPackageManager] :: Testing whether [Microsoft Visual C++ 2015-2022 Runtime] is installed, please wait...
+VERBOSE: [2024-12-21T11:06:14.4408419+11:00] [Repair-ADTWinGetPackageManager] :: Successfully confirmed that [Microsoft Visual C++ 2015-2022 Runtime] is installed on system.
+VERBOSE: [2024-12-21T11:06:14.4503599+11:00] [Repair-ADTWinGetPackageManager] :: Testing whether the installed WinGet is version [1.7.10582] or higher, please wait...
+VERBOSE: [2024-12-21T11:06:14.8096028+11:00] [Repair-ADTWinGetPackageManager] :: Successfully confirmed WinGet version [1.9.25200] is installed on system.
+```
+Ensures that WinGet is pre-provisioned on the system, the required Visual Studio Runtime libraries are available, and WinGet is above the module's minimum required version.
+
 ### Installing Microsoft Visual Studio Tools for Office
 
 ```PowerShell

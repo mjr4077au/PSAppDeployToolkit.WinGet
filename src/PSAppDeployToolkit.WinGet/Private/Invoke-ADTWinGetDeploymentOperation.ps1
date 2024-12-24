@@ -55,6 +55,20 @@ function Invoke-ADTWinGetDeploymentOperation
 
     dynamicparam
     {
+        # Throw if an id, name, or moniker hasn't been provided. This is done like this
+        # and not via parameter sets because this is what Install-WinGetPackage does.
+        if (!$PSBoundParameters.ContainsKey('Id') -and !$PSBoundParameters.ContainsKey('Name') -and !$PSBoundParameters.ContainsKey('Moniker'))
+        {
+            $naerParams = @{
+                Exception = [System.ArgumentException]::new("Please specify a package by Id, Name, or Moniker.")
+                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
+                ErrorId = "WinGet$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))FilterError"
+                TargetObject = $PSBoundParameters
+                RecommendedAction = "Please specify a package by Id, Name, or Moniker; then try again."
+            }
+            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
+        }
+
         # Confirm WinGet is good to go.
         try
         {
@@ -219,20 +233,6 @@ function Invoke-ADTWinGetDeploymentOperation
                 })
         }
 
-        # Throw if an id, name, or moniker hasn't been provided. This is done like this
-        # and not via parameter sets because this is what Install-WinGetPackage does.
-        if (!$PSBoundParameters.ContainsKey('Id') -and !$PSBoundParameters.ContainsKey('Name') -and !$PSBoundParameters.ContainsKey('Moniker'))
-        {
-            $naerParams = @{
-                Exception = [System.ArgumentException]::new("Please specify a package by Id, Name, or Moniker.")
-                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
-                ErrorId = "WinGet$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))FilterError"
-                TargetObject = $PSBoundParameters
-                RecommendedAction = "Please specify a package by Id, Name, or Moniker; then try again."
-            }
-            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
-        }
-
         # Try to get the path to WinGet before proceeding.
         try
         {
@@ -241,20 +241,6 @@ function Invoke-ADTWinGetDeploymentOperation
         catch
         {
             $PSCmdlet.ThrowTerminatingError($_)
-        }
-
-        # Get the active ADT session object if one's in play.
-        $adtSession = if (Test-ADTSessionActive)
-        {
-            Get-ADTSession
-        }
-
-        # Default the scope to "Machine" for the safety of users.
-        # It's super easy to install user-scoped apps into the SYSTEM
-        # user's account, and it's painful to diagnose/clean up.
-        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')))
-        {
-            $PSBoundParameters.Add('Scope', 'Machine')
         }
 
         # Most of the time, we're only wanting a WinGet package anyway.
@@ -273,19 +259,6 @@ function Invoke-ADTWinGetDeploymentOperation
         else
         {
             $PSBoundParameters.Add('Source', 'winget')
-        }
-
-        # Add in a default log file if the caller hasn't specified one.
-        if (!$PSBoundParameters.ContainsKey('Log'))
-        {
-            $PSBoundParameters.Log = if ($adtSession)
-            {
-                "$((Get-ADTConfig).Toolkit.LogPath)\$($adtSession.InstallName)_WinGet.log"
-            }
-            else
-            {
-                "$([System.IO.Path]::GetTempPath())Invoke-ADTWinGetOperation_$([System.DateTime]::Now.ToString('O').Split('.')[0].Replace(':', $null))_WinGet.log"
-            }
         }
 
         # Attempt to find the package to install.
@@ -312,6 +285,33 @@ function Invoke-ADTWinGetDeploymentOperation
         catch
         {
             $PSCmdlet.ThrowTerminatingError($_)
+        }
+
+        # Get the active ADT session object if one's in play.
+        $adtSession = if (Test-ADTSessionActive)
+        {
+            Get-ADTSession
+        }
+
+        # Add in a default log file if the caller hasn't specified one.
+        if (!$PSBoundParameters.ContainsKey('Log'))
+        {
+            $PSBoundParameters.Log = if ($adtSession)
+            {
+                "$((Get-ADTConfig).Toolkit.LogPath)\$($adtSession.InstallName)_WinGet.log"
+            }
+            else
+            {
+                "$([System.IO.Path]::GetTempPath())Invoke-ADTWinGetOperation_$([System.DateTime]::Now.ToString('O').Split('.')[0].Replace(':', $null))_WinGet.log"
+            }
+        }
+
+        # Default the scope to "Machine" for the safety of users.
+        # It's super easy to install user-scoped apps into the SYSTEM
+        # user's account, and it's painful to diagnose/clean up.
+        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')))
+        {
+            $PSBoundParameters.Add('Scope', 'Machine')
         }
 
         # Set up arguments array for WinGet.

@@ -38,21 +38,26 @@ function Convert-ADTArrayToRegexCaptureGroup
     begin
     {
         # Open collector to hold escaped and parsed values.
-        $items = [System.Collections.Generic.List[System.String]]::new()
+        $items = [System.Collections.Specialized.StringCollection]::new()
     }
 
     process
     {
         # Process incoming data and store in the collector.
-        foreach ($item in $InputObject.Where({ ![System.String]::IsNullOrWhiteSpace($_) }))
-        {
-            $items.Add([System.Text.RegularExpressions.Regex]::Escape($item))
+        $null = $InputObject | & {
+            process
+            {
+                if (![System.String]::IsNullOrWhiteSpace($_))
+                {
+                    $items.Add([System.Text.RegularExpressions.Regex]::Escape($_))
+                }
+            }
         }
     }
 
     end
     {
         # Return collected strings as a regex capture group.
-        if ($items.Count) { return "($([System.String]::Join('|', $items)))" }
+        if ($items.Count) { return "($($items -join '|'))" }
     }
 }

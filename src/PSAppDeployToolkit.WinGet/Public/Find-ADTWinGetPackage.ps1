@@ -101,9 +101,6 @@ function Find-ADTWinGetPackage
 
     begin
     {
-        # Initialize function.
-        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-
         # Throw if at least one filtration method isn't provided.
         if (!($PSBoundParameters.Keys -match '^(Query|Command|Id|Moniker|Name|Tag)$'))
         {
@@ -116,6 +113,9 @@ function Find-ADTWinGetPackage
             }
             $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
         }
+
+        # Initialize function.
+        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     }
 
     process

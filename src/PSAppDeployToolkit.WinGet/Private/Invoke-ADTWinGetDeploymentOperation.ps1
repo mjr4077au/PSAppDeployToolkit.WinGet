@@ -14,6 +14,42 @@ function Invoke-ADTWinGetDeploymentOperation
         [System.String]$Action,
 
         [Parameter(Mandatory = $false)]
+        [ValidateSet('Equals', 'EqualsCaseInsensitive')]
+        [System.String]$MatchOption,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Query,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Id,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Log,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Silent', 'Interactive')]
+        [System.String]$Mode,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Moniker,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Name,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Source,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]$Version,
+
+        [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$PassThru
     )
 
@@ -120,64 +156,11 @@ function Invoke-ADTWinGetDeploymentOperation
                 ))
         }
 
-        # Add in parameters used by all actions.
-        $paramDictionary.Add('MatchOption', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'MatchOption', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateSetAttribute]::new('Equals', 'EqualsCaseInsensitive')
-                )
-            ))
-        $paramDictionary.Add('Query', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Query', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Id', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Id', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Log', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Log', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Mode', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Mode', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateSetAttribute]::new('Silent', 'Interactive')
-                )
-            ))
-        $paramDictionary.Add('Moniker', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Moniker', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Name', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Name', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Source', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Source', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-        $paramDictionary.Add('Version', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                'Version', [System.String], $(
-                    [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                    [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-                )
-            ))
-
         # Return the populated dictionary.
-        return $paramDictionary
+        if ($paramDictionary.Count)
+        {
+            return $paramDictionary
+        }
     }
 
     begin

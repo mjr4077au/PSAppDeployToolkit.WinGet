@@ -39,6 +39,16 @@ function Assert-ADTWinGetPackageManager
     (
     )
 
+    # Try to get the path to WinGet before proceeding.
+    try
+    {
+        $wingetPath = Get-ADTWinGetPath
+    }
+    catch
+    {
+        $PSCmdlet.ThrowTerminatingError($_)
+    }
+
     # Try to get the WinGet version.
     try
     {
@@ -53,7 +63,7 @@ function Assert-ADTWinGetPackageManager
     if ($wingetVer -lt $Script:ADT.WinGetMinVersion)
     {
         $naerParams = @{
-            Exception = [System.Activities.VersionMismatchException]::new("The installed WinGet version of [$wingetVer] is less than [$($Script:ADT.WinGetMinVersion)].", [System.Activities.WorkflowIdentity]::new('winget.exe', $wingetVer, $wingetPath.FullName), [System.Activities.WorkflowIdentity]::new('winget.exe', $Script:ADT.WinGetMinVersion, $wingetPath.FullName))
+            Exception = [System.Activities.VersionMismatchException]::new("The installed WinGet version of [$wingetVer] is less than the required [$($Script:ADT.WinGetMinVersion)].", [System.Activities.WorkflowIdentity]::new('winget.exe', $Script:ADT.WinGetMinVersion, $wingetPath.FullName), [System.Activities.WorkflowIdentity]::new('winget.exe', $wingetVer, $wingetPath.FullName))
             Category = [System.Management.Automation.ErrorCategory]::InvalidResult
             ErrorId = 'WinGetMinimumVersionError'
             RecommendedAction = "Please run [Repair-ADTWinGetPackageManager] as an admin, then try again."

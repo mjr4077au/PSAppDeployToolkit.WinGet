@@ -65,11 +65,22 @@ try
 
     # Expand command lookup table with cmdlets used through this module.
     & {
-        # Import required modules and add their commands to the command table.
-        $RequiredModules = [System.Collections.ObjectModel.ReadOnlyCollection[Microsoft.PowerShell.Commands.ModuleSpecification]]$(
-            @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' }
+        # Set up list of modules this module depends upon.
+        $RequiredModules = [System.Collections.Generic.List[Microsoft.PowerShell.Commands.ModuleSpecification]][Microsoft.PowerShell.Commands.ModuleSpecification[]]$(
             @{ ModuleName = "$PSScriptRoot\Submodules\psyml"; Guid = 'a88e2e67-a937-4d98-a4d3-0b03d3ade169'; ModuleVersion = '1.0.0' }
         )
+
+        # Handle the Appx module differently due to PowerShell 7 shenanighans. https://github.com/PowerShell/PowerShell/issues/13138
+        if ($PSEdition.Equals('Core'))
+        {
+            (Import-Module -FullyQualifiedName @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' } -Global -UseWindowsPowerShell -Force -PassThru -WarningAction Ignore -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+        }
+        else
+        {
+            $RequiredModules.Add(@{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' })
+        }
+
+        # Import required modules and add their commands to the command table.
         (Import-Module -FullyQualifiedName $RequiredModules -Global -Force -PassThru -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
     }
 

@@ -45,18 +45,18 @@ function Get-ADTWinGetSource
 
     begin
     {
-        # Initialize function.
-        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-
-        # Try to get the path to WinGet before proceeding.
+        # Confirm WinGet is good to go.
         try
         {
-            $wingetPath = Get-ADTWinGetPath
+            Assert-ADTWinGetPackageManager
         }
         catch
         {
             $PSCmdlet.ThrowTerminatingError($_)
         }
+
+        # Initialize function.
+        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     }
 
     process
@@ -67,7 +67,7 @@ function Get-ADTWinGetSource
             {
                 # Get all sources, returning early if there's none (1:1 API with `Get-WinGetSource`).
                 Write-ADTLogEntry -Message "Getting list of WinGet sources, please wait..."
-                if (($wgSrcRes = & $wingetPath source list 2>&1).Equals('There are no sources configured.'))
+                if (($wgSrcRes = & (Get-ADTWinGetPath) source list 2>&1).Equals('There are no sources configured.'))
                 {
                     Write-ADTLogEntry -Message "There are no WinGet sources configured on this system."
                     return

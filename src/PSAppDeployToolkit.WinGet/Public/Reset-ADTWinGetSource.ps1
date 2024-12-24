@@ -56,18 +56,18 @@ function Reset-ADTWinGetSource
 
     begin
     {
-        # Initialize function.
-        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-
-        # Try to get the path to WinGet before proceeding.
+        # Confirm WinGet is good to go.
         try
         {
-            $wingetPath = Get-ADTWinGetPath
+            Assert-ADTWinGetPackageManager
         }
         catch
         {
             $PSCmdlet.ThrowTerminatingError($_)
         }
+
+        # Initialize function.
+        Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     }
 
     process
@@ -80,7 +80,7 @@ function Reset-ADTWinGetSource
                 if ($All)
                 {
                     Write-ADTLogEntry -Message "Resetting all WinGet sources, please wait..."
-                    if (!($wgSrcRes = & $wingetPath source reset --force 2>&1).Equals('Resetting all sources...Done'))
+                    if (!($wgSrcRes = & (Get-ADTWinGetPath) source reset --force 2>&1).Equals('Resetting all sources...Done'))
                     {
                         $naerParams = @{
                             Exception = [System.Runtime.InteropServices.ExternalException]::new("Failed to reset all WinGet sources. $($wgSrcRes.TrimEnd('.')).", $Global:LASTEXITCODE)
@@ -97,7 +97,7 @@ function Reset-ADTWinGetSource
 
                 # Reset the specified source.
                 Write-ADTLogEntry -Message "Resetting WinGet source [$Name], please wait..."
-                if (!($wgSrcRes = & $wingetPath source reset $Name 2>&1).Equals("Resetting source: $Name...Done"))
+                if (!($wgSrcRes = & (Get-ADTWinGetPath) source reset $Name 2>&1).Equals("Resetting source: $Name...Done"))
                 {
                     $naerParams = @{
                         Exception = [System.Runtime.InteropServices.ExternalException]::new("Failed to WinGet source [$Name]. $($wgSrcRes.TrimEnd('.')).", $Global:LASTEXITCODE)

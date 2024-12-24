@@ -16,6 +16,16 @@ function Invoke-ADTWinGetDeploymentOperation
 
     dynamicparam
     {
+        # Confirm WinGet is good to go.
+        try
+        {
+            Assert-ADTWinGetPackageManager
+        }
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($_)
+        }
+
         # Define parameter dictionary for returning at the end.
         $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
 

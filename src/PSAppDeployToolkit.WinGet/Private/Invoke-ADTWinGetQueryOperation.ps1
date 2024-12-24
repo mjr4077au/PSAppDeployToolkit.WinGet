@@ -50,10 +50,10 @@ function Invoke-ADTWinGetQueryOperation
         [System.String]$Tag
     )
 
-    # Try to get the path to WinGet before proceeding.
+    # Confirm WinGet is good to go.
     try
     {
-        $wingetPath = Get-ADTWinGetPath
+        Assert-ADTWinGetPackageManager
     }
     catch
     {
@@ -83,7 +83,7 @@ function Invoke-ADTWinGetQueryOperation
 
     # Invoke WinGet and return early if we couldn't find a package.
     Write-ADTLogEntry -Message "Finding packages matching input criteria, please wait..."
-    if (($wingetOutput = & $wingetPath $wingetArgs 2>&1 | & { process { if ($_ -match '^\w+') { return $_.Trim() } } }) -match '^No.+package found matching input criteria\.$')
+    if (($wingetOutput = & (Get-ADTWinGetPath) $wingetArgs 2>&1 | & { process { if ($_ -match '^\w+') { return $_.Trim() } } }) -match '^No.+package found matching input criteria\.$')
     {
         Write-ADTLogEntry -Message "No package found matching input criteria."
         return

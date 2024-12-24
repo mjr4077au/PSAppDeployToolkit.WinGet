@@ -16,7 +16,7 @@ Install-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-AllowHash
  [-Architecture <String>] [-Custom <String>] [-Force] [-Header <String>] [-Id <String>]
  [-InstallerType <String>] [-Locale <String>] [-Location <String>] [-Log <String>] [-Mode <String>]
  [-Moniker <String>] [-Name <String>] [-Override <String>] [-Scope <String>] [-SkipDependencies]
- [-Source <String>] [-Version <String>] [-DebugHashMismatch] [<CommonParameters>]
+ [-Source <String>] [-Version <String>] [-DebugHashMismatch] [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -400,6 +400,22 @@ Accept wildcard characters: False
 ### -DebugHashMismatch
 
 Forces the AllowHashMismatch for debugging purposes.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+
+Returns an object detailing the operation, just as Microsoft's module does by default.
 
 ```yaml
 Type: SwitchParameter

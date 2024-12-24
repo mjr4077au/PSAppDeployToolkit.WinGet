@@ -43,6 +43,9 @@ function Uninstall-ADTWinGetPackage
     .PARAMETER Version
         Specify the version of the package.
 
+    .PARAMETER PassThru
+        Returns an object detailing the operation, just as Microsoft's module does by default.
+
     .INPUTS
         None
 
@@ -112,7 +115,10 @@ function Uninstall-ADTWinGetPackage
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Version
+        [System.String]$Version,
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$PassThru
     )
 
     begin
@@ -128,12 +134,20 @@ function Uninstall-ADTWinGetPackage
             try
             {
                 # Send this to the backend common function.
-                return (Invoke-ADTWinGetDeploymentOperation -Action Uninstall @PSBoundParameters)
+                Invoke-ADTWinGetDeploymentOperation -Action Uninstall @PSBoundParameters
             }
             catch
             {
                 # Re-writing the ErrorRecord with Write-Error ensures the correct PositionMessage is used.
                 Write-Error -ErrorRecord $_
+            }
+            finally
+            {
+                # Invoke-ADTWinGetDeploymentOperation writes this variable within our scope so we can get to it.
+                if ($PassThru -and (Get-Variable -Name wingetResult -ValueOnly -ErrorAction Ignore))
+                {
+                    $PSCmdlet.WriteObject($wingetResult)
+                }
             }
         }
         catch

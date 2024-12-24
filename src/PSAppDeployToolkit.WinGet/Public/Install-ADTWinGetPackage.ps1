@@ -76,6 +76,9 @@ function Install-ADTWinGetPackage
     .PARAMETER DebugHashMismatch
         Forces the AllowHashMismatch for debugging purposes.
 
+    .PARAMETER PassThru
+        Returns an object detailing the operation, just as Microsoft's module does by default.
+
     .INPUTS
         None
 
@@ -186,7 +189,10 @@ function Install-ADTWinGetPackage
         [System.String]$Version,
 
         [Parameter(Mandatory = $false)]
-        [System.Management.Automation.SwitchParameter]$DebugHashMismatch
+        [System.Management.Automation.SwitchParameter]$DebugHashMismatch,
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$PassThru
     )
 
     begin
@@ -202,12 +208,20 @@ function Install-ADTWinGetPackage
             try
             {
                 # Send this to the backend common function.
-                return (Invoke-ADTWinGetDeploymentOperation -Action Install @PSBoundParameters)
+                Invoke-ADTWinGetDeploymentOperation -Action Install @PSBoundParameters
             }
             catch
             {
                 # Re-writing the ErrorRecord with Write-Error ensures the correct PositionMessage is used.
                 Write-Error -ErrorRecord $_
+            }
+            finally
+            {
+                # Invoke-ADTWinGetDeploymentOperation writes this variable within our scope so we can get to it.
+                if ($PassThru -and (Get-Variable -Name wingetResult -ValueOnly -ErrorAction Ignore))
+                {
+                    $PSCmdlet.WriteObject($wingetResult)
+                }
             }
         }
         catch

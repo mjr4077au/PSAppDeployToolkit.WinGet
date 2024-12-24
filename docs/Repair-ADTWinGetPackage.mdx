@@ -13,7 +13,7 @@ Repairs a WinGet Package.
 
 ```powershell
 Repair-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-Id <String>] [-Log <String>]
- [-Mode <String>] [-Moniker <String>] [-Name <String>] [-Source <String>] [-Version <String>]
+ [-Mode <String>] [-Moniker <String>] [-Name <String>] [-Source <String>] [-Version <String>] [-PassThru]
  [<CommonParameters>]
 ```
 
@@ -194,6 +194,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+
+Returns an object detailing the operation, just as Microsoft's module does by default.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

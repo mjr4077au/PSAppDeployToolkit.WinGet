@@ -201,7 +201,7 @@ function Invoke-ADTWinGetDeploymentOperation
             return $(
                 $Action
                 Convert-ADTFunctionParamsToArgArray @PSBoundParameters -Preset WinGet
-                if ($PSBoundParameters.ContainsKey('MatchOption') -and ($PSBoundParameters.MatchOption -eq 'Equals'))
+                if ($MatchOption -eq 'Equals')
                 {
                     '--exact'
                 }

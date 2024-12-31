@@ -204,7 +204,7 @@ function Invoke-ADTWinGetDeploymentOperation
             return , [System.String[]](& $wingetPath $wingetArgs 2>&1 | & {
                     begin
                     {
-                        $waleParams = @{PassThru = $true }
+                        $waleParams = @{ PassThru = $true }
                     }
 
                     process

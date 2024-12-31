@@ -55,30 +55,6 @@ function Invoke-ADTWinGetDeploymentOperation
 
     dynamicparam
     {
-        # Throw if an id, name, or moniker hasn't been provided. This is done like this
-        # and not via parameter sets because this is what Install-WinGetPackage does.
-        if (!$PSBoundParameters.ContainsKey('Id') -and !$PSBoundParameters.ContainsKey('Name') -and !$PSBoundParameters.ContainsKey('Moniker'))
-        {
-            $naerParams = @{
-                Exception = [System.ArgumentException]::new("Please specify a package by Id, Name, or Moniker.")
-                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
-                ErrorId = "WinGet$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))FilterError"
-                TargetObject = $PSBoundParameters
-                RecommendedAction = "Please specify a package by Id, Name, or Moniker; then try again."
-            }
-            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
-        }
-
-        # Confirm WinGet is good to go.
-        try
-        {
-            Assert-ADTWinGetPackageManager
-        }
-        catch
-        {
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
-
         # Define parameter dictionary for returning at the end.
         $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
 
@@ -231,6 +207,30 @@ function Invoke-ADTWinGetDeploymentOperation
                         }
                     }
                 })
+        }
+
+        # Throw if an id, name, or moniker hasn't been provided. This is done like this
+        # and not via parameter sets because this is what Install-WinGetPackage does.
+        if (!$PSBoundParameters.ContainsKey('Id') -and !$PSBoundParameters.ContainsKey('Name') -and !$PSBoundParameters.ContainsKey('Moniker'))
+        {
+            $naerParams = @{
+                Exception = [System.ArgumentException]::new("Please specify a package by Id, Name, or Moniker.")
+                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
+                ErrorId = "WinGet$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))FilterError"
+                TargetObject = $PSBoundParameters
+                RecommendedAction = "Please specify a package by Id, Name, or Moniker; then try again."
+            }
+            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
+        }
+
+        # Confirm WinGet is good to go.
+        try
+        {
+            Assert-ADTWinGetPackageManager
+        }
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($_)
         }
 
         # Try to get the path to WinGet before proceeding.

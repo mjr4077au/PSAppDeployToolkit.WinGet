@@ -42,7 +42,16 @@ function Invoke-ADTWinGetDeploymentOperation
         [System.String]$Name,
 
         [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateScript({
+                try
+                {
+                    return (Get-ADTWinGetSource -Name $_ -InformationAction SilentlyContinue)
+                }
+                catch
+                {
+                    $PSCmdlet.ThrowTerminatingError($_)
+                }
+            })]
         [System.String]$Source,
 
         [Parameter(Mandatory = $false)]
@@ -243,24 +252,6 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
-        # Most of the time, we're only wanting a WinGet package anyway.
-        # Defaulting to the winget source speeds up operations.
-        if ($PSBoundParameters.ContainsKey('Source'))
-        {
-            try
-            {
-                $null = Get-ADTWinGetSource -Name $PSBoundParameters.Source
-            }
-            catch
-            {
-                $PSCmdlet.ThrowTerminatingError($_)
-            }
-        }
-        else
-        {
-            $PSBoundParameters.Add('Source', 'winget')
-        }
-
         # Attempt to find the package to install.
         try
         {
@@ -458,7 +449,7 @@ function Invoke-ADTWinGetDeploymentOperation
                 New-Variable -Name wingetResult -Scope 1 -Value ([pscustomobject]@{
                         Id = $wgPackage.Id
                         Name = $wgPackage.Name
-                        Source = $PSBoundParameters.Source
+                        Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage.Source }
                         CorrelationData = [System.String]::Empty
                         ExtendedErrorCode = $wingetException
                         RebootRequired = $Global:LASTEXITCODE.Equals(1641) -or ($Global:LASTEXITCODE.Equals(3010))

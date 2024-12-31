@@ -125,7 +125,7 @@
             # ReleaseNotes = ''
 
             # Prerelease tag for PSGallery.
-            Prerelease = 'rc4'
+            # Prerelease = 'rc4'
 
         } # End of PSData hashtable
 

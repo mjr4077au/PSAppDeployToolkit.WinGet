@@ -90,17 +90,17 @@ function Install-ADTWinGetPackage
         This function returns a PSObject containing the outcome of the operation.
 
     .EXAMPLE
-        Install-WinGetPackage -Id Microsoft.PowerShell
+        Install-ADTWinGetPackage -Id Microsoft.PowerShell
 
         This example shows how to install a package by the specifying the package identifier. If the package identifier is available from more than one source, you must provide additional search criteria to select a specific instance of the package. If more than one source is configured with the same package identifier, the user must disambiguate.
 
     .EXAMPLE
-        Install-WinGetPackage -Name "PowerToys (Preview)"
+        Install-ADTWinGetPackage -Name "PowerToys (Preview)"
 
         This example shows how to install a package by specifying the package name.
 
     .EXAMPLE
-        Install-WinGetPackage Microsoft.PowerShell -Version 7.4.4.0
+        Install-ADTWinGetPackage Microsoft.PowerShell -Version 7.4.4.0
 
         This example shows how to install a specific version of a package using a query. The command does a query search for packages matching `Microsoft.PowerShell`. The results of the search a limited to matches with the version of `7.4.4.0`.
 

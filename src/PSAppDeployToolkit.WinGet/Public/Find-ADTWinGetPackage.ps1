@@ -51,7 +51,7 @@ function Find-ADTWinGetPackage
         This function does not return any output.
 
     .EXAMPLE
-        Find-WinGetPackage -Id Microsoft.PowerShell
+        Find-ADTWinGetPackage -Id Microsoft.PowerShell
 
         This example shows how to search for packages by package identifier. By default, the command searches all configured sources. The command performs a case-insensitive substring match against the PackageIdentifier property of the packages.
 

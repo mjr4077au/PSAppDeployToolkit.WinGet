@@ -56,12 +56,12 @@ function Repair-ADTWinGetPackage
         This function returns a PSObject containing the outcome of the operation.
 
     .EXAMPLE
-        Repair-WinGetPackage -Id "Microsoft.GDK.2406"
+        Repair-ADTWinGetPackage -Id "Microsoft.GDK.2406"
 
         This example shows how to repair a package by specifying the package identifier. If the package identifier is available from more than one source, you must provide additional search criteria to select a specific instance of the package.
 
     .EXAMPLE
-        Repair-WinGetPackage -Name "Microsoft Game Development Kit - 240602 (June 2024 Update 2)"
+        Repair-ADTWinGetPackage -Name "Microsoft Game Development Kit - 240602 (June 2024 Update 2)"
 
         This example shows how to repair a package using the package name. Please note that the examples mentioned above are mainly reference examples for the repair cmdlet and may not be operational as is, since many installers don't support repair as a standard functionality. For the Microsoft.GDK.2406 example, the assumption is that Microsoft.GDK.2406 supports repair capability and the author of the installer has provided the necessary repair context/switches in the Package Manifest in the Package Source referenced by the WinGet Client.
 

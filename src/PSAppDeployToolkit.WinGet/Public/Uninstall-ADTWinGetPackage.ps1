@@ -57,17 +57,17 @@ function Uninstall-ADTWinGetPackage
         This function returns a PSObject containing the outcome of the operation.
 
     .EXAMPLE
-        Uninstall-WinGetPackage -Id Microsoft.PowerShell
+        Uninstall-ADTWinGetPackage -Id Microsoft.PowerShell
 
         This example shows how to uninstall a package by the specifying the package identifier. If the package identifier is available from more than one source, you must provide additional search criteria to select a specific instance of the package.
 
     .EXAMPLE
-        Uninstall-WinGetPackage -Name "PowerToys (Preview)"
+        Uninstall-ADTWinGetPackage -Name "PowerToys (Preview)"
 
         This sample uninstalls the PowerToys package by the specifying the package name.
 
     .EXAMPLE
-        Uninstall-WinGetPackage Microsoft.PowerShell -Version 7.4.4.0
+        Uninstall-ADTWinGetPackage Microsoft.PowerShell -Version 7.4.4.0
 
         This example shows how to uninstall a specific version of a package using a query. The command does a query search for packages matching `Microsoft.PowerShell`. The results of the search a limited to matches with the version of `7.4.4.0`.
 

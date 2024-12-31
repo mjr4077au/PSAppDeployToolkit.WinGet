@@ -232,29 +232,17 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
         }
 
-        # Confirm WinGet is good to go.
+        # Perform initial setup.
         try
         {
-            Assert-ADTWinGetPackageManager
-        }
-        catch
-        {
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
-
-        # Try to get the path to WinGet before proceeding.
-        try
-        {
+            # Ensure WinGet is good to go.
+            if (!$PSBoundParameters.ContainsKey('Source'))
+            {
+                Assert-ADTWinGetPackageManager
+            }
             $wingetPath = Get-ADTWinGetPath
-        }
-        catch
-        {
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
 
-        # Attempt to find the package to install.
-        try
-        {
+            # Attempt to find the package to install.
             $fawgpParams = @{}; if ($PSBoundParameters.ContainsKey('Id'))
             {
                 $fawgpParams.Add('Id', $PSBoundParameters.Id)

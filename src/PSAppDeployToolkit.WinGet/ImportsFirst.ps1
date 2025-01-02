@@ -73,7 +73,14 @@ try
         # Handle the Appx module differently due to PowerShell 7 shenanighans. https://github.com/PowerShell/PowerShell/issues/13138
         if ($PSEdition.Equals('Core'))
         {
-            (Import-Module -FullyQualifiedName @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' } -Global -UseWindowsPowerShell -Force -PassThru -WarningAction Ignore -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+            try
+            {
+                (Import-Module -FullyQualifiedName @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' } -Global -UseWindowsPowerShell -Force -PassThru -WarningAction Ignore -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+            }
+            catch
+            {
+                (Import-Module -FullyQualifiedName @{ ModuleName = 'Appx'; Guid = 'aeef2bef-eba9-4a1d-a3d2-d0b52df76deb'; ModuleVersion = '1.0' } -Global -UseWindowsPowerShell -Force -PassThru -WarningAction Ignore -ErrorAction Stop).ExportedCommands.Values | & { process { $CommandTable.Add($_.Name, $_) } }
+            }
         }
         else
         {

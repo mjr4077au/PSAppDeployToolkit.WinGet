@@ -72,6 +72,12 @@ function Invoke-ADTWinGetQueryOperation
         }
     }
 
+    # Force exact matching for msstore identifiers.
+    if ($PSBoundParameters.ContainsKey('Id') -and !$Id.Contains('.'))
+    {
+        $MatchOption = 'Equals'
+    }
+
     # Set up arguments array for WinGet.
     $wingetArgs = $(
         $Action

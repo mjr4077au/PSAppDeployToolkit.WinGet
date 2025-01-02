@@ -42,7 +42,16 @@ function Invoke-ADTWinGetQueryOperation
         [System.String]$Name,
 
         [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateScript({
+                try
+                {
+                    return (Get-ADTWinGetSource -Name $_ -InformationAction SilentlyContinue)
+                }
+                catch
+                {
+                    $PSCmdlet.ThrowTerminatingError($_)
+                }
+            })]
         [System.String]$Source,
 
         [Parameter(Mandatory = $false)]
@@ -51,21 +60,11 @@ function Invoke-ADTWinGetQueryOperation
     )
 
     # Confirm WinGet is good to go.
-    try
-    {
-        Assert-ADTWinGetPackageManager
-    }
-    catch
-    {
-        $PSCmdlet.ThrowTerminatingError($_)
-    }
-
-    # Confirm the validity of the provided source.
-    if ($PSBoundParameters.ContainsKey('Source'))
+    if (!$PSBoundParameters.ContainsKey('Source'))
     {
         try
         {
-            $null = Get-ADTWinGetSource -Name $PSBoundParameters.Source
+            Assert-ADTWinGetPackageManager
         }
         catch
         {

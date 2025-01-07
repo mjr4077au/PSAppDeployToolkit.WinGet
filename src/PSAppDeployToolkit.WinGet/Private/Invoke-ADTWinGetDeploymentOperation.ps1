@@ -180,7 +180,7 @@ function Invoke-ADTWinGetDeploymentOperation
             )
 
             # Ensure the action is also excluded.
-            $PSBoundParameters.Exclude = $('Action'; 'MatchOption'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; 'PassThru'; $(if ($Exclude) { $Exclude } ))
+            $PSBoundParameters.Exclude = $('Action'; 'MatchOption'; 'Mode'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; 'PassThru'; $(if ($Exclude) { $Exclude } ))
 
             # Output each item for the caller to collect.
             return $(
@@ -189,6 +189,10 @@ function Invoke-ADTWinGetDeploymentOperation
                 if ($MatchOption -eq 'Equals')
                 {
                     '--exact'
+                }
+                if ($Mode -eq 'Silent')
+                {
+                    '--silent'
                 }
                 '--accept-source-agreements'
                 if ($Action -ne 'Uninstall')

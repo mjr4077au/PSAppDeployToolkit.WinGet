@@ -190,7 +190,7 @@ function Invoke-ADTWinGetDeploymentOperation
                 {
                     '--exact'
                 }
-                if ($Mode -eq 'Silent')
+                if (($Mode -eq 'Silent') -or ($adtSession -and ($adtSession.DeployMode -eq 'Silent')))
                 {
                     '--silent'
                 }

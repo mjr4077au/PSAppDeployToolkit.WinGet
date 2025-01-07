@@ -44,7 +44,6 @@ $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
 $ProgressPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 Set-StrictMode -Version 3
 $ModuleName = [System.Text.RegularExpressions.Regex]::Match((Get-Item $BuildFile).Name, '^(.*)\.build\.ps1$').Groups[1].Value
-$BuildScriptPath = $MyInvocation.MyCommand.Path
 [System.Version]$requiredPSVersion = '5.1.0'
 
 # Default build.
@@ -84,10 +83,7 @@ Enter-Build {
     $Script:BuildModuleRoot = Join-Path -Path $Script:ArtifactsPath -ChildPath "Module\$Script:ModuleName"
     $Script:BuildModuleRootFile = Join-Path -Path $Script:BuildModuleRoot -ChildPath "$($Script:ModuleName).psm1"
 
-    # Import this module's manifest via the language parser. This allows us to test with potential extra variables that are permitted in manifests.
-    # https://github.com/PowerShell/PowerShell/blob/7ca7aae1d13d19e38c7c26260758f474cb9bef7f/src/System.Management.Automation/engine/Modules/ModuleCmdletBase.cs#L509-L512
-    $manifestInfo = [System.Management.Automation.Language.Parser]::ParseFile($Script:ModuleManifestFile, [ref]$null, [ref]$null).GetScriptBlock()
-    $manifestInfo.CheckRestrictedLanguage([System.String[]]$null, [System.String[]]('PSEdition'), $true); $manifestInfo = $manifestInfo.InvokeReturnAsIs()
+    $manifestInfo = Import-LocalizedData -BaseDirectory $Script:ModuleSourcePath -FileName "$($Script:ModuleName).psd1"
     $Script:ModuleVersion = $manifestInfo.ModuleVersion
     $Script:ModuleDescription = $manifestInfo.Description
     $Script:FunctionsToExport = $manifestInfo.FunctionsToExport
@@ -184,7 +180,7 @@ Add-BuildTask EncodingCheck {
 # Synopsis: Analyze scripts to verify if they adhere to desired coding format (Stroustrup / OTBS / Allman).
 Add-BuildTask FormattingCheck {
     Write-Build White '      Performing script formatting checks...'
-    if (($scriptAnalyzerResults = $Script:BuildScriptPath, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -Setting CodeFormattingAllman -ExcludeRule PSAlignAssignmentStatement -Recurse -Fix:($env:GITHUB_ACTIONS -ne 'true') -Verbose:$false))
+    if (($scriptAnalyzerResults = $Script:BuildRoot, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -Setting CodeFormattingAllman -ExcludeRule PSAlignAssignmentStatement -Recurse -Fix:($env:GITHUB_ACTIONS -ne 'true') -Verbose:$false))
     {
         $scriptAnalyzerResults | Format-Table
         throw '      PSScriptAnalyzer code formatting check did not adhere to defined standards'
@@ -195,26 +191,12 @@ Add-BuildTask FormattingCheck {
 # Synopsis: Invokes PSScriptAnalyzer against the Module source path.
 Add-BuildTask Analyze {
     Write-Build White '      Performing Module ScriptAnalyzer checks...'
-    if (($scriptAnalyzerResults = $Script:BuildScriptPath, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -ExcludeRule PSUseShouldProcessForStateChangingFunctions -Recurse -Verbose:$false))
+    if (($scriptAnalyzerResults = $Script:BuildRoot, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -ExcludeRule PSUseShouldProcessForStateChangingFunctions -Recurse -Verbose:$false))
     {
         $scriptAnalyzerResults | Format-Table
         throw '      One or more PSScriptAnalyzer errors/warnings where found.'
     }
     Write-Build Green '      ...Module Analyze Complete!'
-}
-
-# Synopsis: Invokes Script Analyzer against the Tests path if it exists.
-Add-BuildTask AnalyzeTests -After Analyze {
-    if (Test-Path -Path $Script:TestsPath)
-    {
-        Write-Build White '      Performing Test ScriptAnalyzer checks...'
-        if (($scriptAnalyzerResults = Invoke-ScriptAnalyzer -Path $Script:TestsPath -ExcludeRule PSUseDeclaredVarsMoreThanAssignments -Recurse -Verbose:$false))
-        {
-            $scriptAnalyzerResults | Format-Table
-            throw '      One or more PSScriptAnalyzer errors/warnings where found.'
-        }
-        Write-Build Green '      ...Test Analyze Complete!'
-    }
 }
 
 # Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists).

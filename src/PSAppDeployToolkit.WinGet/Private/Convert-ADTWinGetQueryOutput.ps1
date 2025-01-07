@@ -58,7 +58,7 @@ function Convert-ADTWinGetQueryOutput
     catch
     {
         $naerParams = @{
-            Exception = [System.IO.InvalidDataException]::new("Failed to parse provided WinGet output.", $_.Exception)
+            Exception = [System.IO.InvalidDataException]::new("Failed to parse provided WinGet output. Provided WinGet output was:`n$([System.String]::Join("`n", $WinGetOutput))", $_.Exception)
             Category = [System.Management.Automation.ErrorCategory]::InvalidResult
             ErrorId = 'WinGetListOutputParseFailure'
             TargetObject = $WinGetOutput

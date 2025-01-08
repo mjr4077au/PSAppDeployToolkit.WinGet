@@ -205,7 +205,17 @@ function Invoke-ADTWinGetDeploymentOperation
         # Define internal scriptblock for invoking WinGet. This is a
         # scriptblock so Write-ADTLogEntry uses this function's source.
         $wingetInvoker = {
-            return , [System.String[]](& $wingetPath $wingetArgs 2>&1 | & {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [System.String[]]$ArgumentList
+            )
+
+            # This scriptblock must always return the output as a string array, even for singular lines.
+            Write-ADTLogEntry -Message "Executing [$wingetPath $ArgumentList]."
+            return , [System.String[]](& $wingetPath $ArgumentList 2>&1 | & {
                     begin
                     {
                         $waleParams = @{ PassThru = $true }
@@ -297,9 +307,6 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSBoundParameters.Add('Scope', 'Machine')
         }
 
-        # Set up arguments array for WinGet.
-        $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters
-
         # Generate action lookup table for verbage.
         $actionTranslator = @{
             Install = 'Installer'
@@ -315,15 +322,13 @@ function Invoke-ADTWinGetDeploymentOperation
         if (($Action -notmatch '^(install|upgrade)$') -or !$PSBoundParameters.ContainsKey('DebugHashMismatch') -or !$PSBoundParameters.DebugHashMismatch)
         {
             # Invoke WinGet and print each non-null line.
-            Write-ADTLogEntry -Message "Executing [$wingetPath $wingetArgs]."
-            $wingetOutput = & $wingetInvoker
+            $wingetOutput = & $wingetInvoker -ArgumentList (Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters)
 
             # If package isn't found, rerun again without --Scope argument.
             if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and $noScope)
             {
                 Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
-                $wingetArgs = Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope
-                $wingetOutput = & $wingetInvoker
+                $wingetOutput = & $wingetInvoker -ArgumentList (Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope)
             }
         }
         else

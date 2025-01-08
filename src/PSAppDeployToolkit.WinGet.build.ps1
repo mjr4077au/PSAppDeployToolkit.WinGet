@@ -48,7 +48,9 @@ $ModuleName = [System.Text.RegularExpressions.Regex]::Match((Get-Item $BuildFile
 
 # Default build.
 $str = @()
-$str = 'Clean', 'ValidateRequirements', 'ImportModuleManifest'
+$str = 'Clean', 'ValidateRequirements'
+$str += 'TestModuleManifest'
+$str += 'ImportModuleManifest'
 $str += 'EncodingCheck'
 $str += 'FormattingCheck'
 $str += 'Analyze', 'Test'
@@ -128,10 +130,12 @@ Add-BuildTask ValidateRequirements {
 }
 
 # Synopsis: Import the current module manifest file for processing.
-Add-BuildTask TestModuleManifest -Before ImportModuleManifest {
+Add-BuildTask TestModuleManifest {
     Write-Build White '      Running module manifest tests...'
     Assert-Build (Test-Path $Script:ModuleManifestFile) 'Unable to locate the module manifest file.'
     Assert-Build (Get-ChildItem $Script:ModuleManifestFile | Test-ModuleManifest -ErrorAction Ignore) 'Module Manifest test did not pass verification.'
+    Assert-Build (!(Get-Module -Name $Script:ModuleName)) 'Conflicting module already imported.'
+    Assert-Build (!(Get-ChildItem -LiteralPath $env:PSModulePath.Split(';') -Filter $Script:ModuleName -ErrorAction Ignore)) 'Conflicting module within a PSModulePath directory.'
     Write-Build Green '      ...Module Manifest Verification Complete!'
 }
 
@@ -180,7 +184,7 @@ Add-BuildTask EncodingCheck {
 # Synopsis: Analyze scripts to verify if they adhere to desired coding format (Stroustrup / OTBS / Allman).
 Add-BuildTask FormattingCheck {
     Write-Build White '      Performing script formatting checks...'
-    if (($scriptAnalyzerResults = $Script:BuildRoot, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -Setting CodeFormattingAllman -ExcludeRule PSAlignAssignmentStatement -Recurse -Fix:($env:GITHUB_ACTIONS -ne 'true') -Verbose:$false))
+    if (($scriptAnalyzerResults = Invoke-ScriptAnalyzer -Path $Script:BuildRoot -Setting CodeFormattingAllman -ExcludeRule PSAlignAssignmentStatement -Recurse -Fix:($env:GITHUB_ACTIONS -ne 'true') -Verbose:$false))
     {
         $scriptAnalyzerResults | Format-Table
         throw '      PSScriptAnalyzer code formatting check did not adhere to defined standards'
@@ -191,7 +195,7 @@ Add-BuildTask FormattingCheck {
 # Synopsis: Invokes PSScriptAnalyzer against the Module source path.
 Add-BuildTask Analyze {
     Write-Build White '      Performing Module ScriptAnalyzer checks...'
-    if (($scriptAnalyzerResults = $Script:BuildRoot, $Script:ModuleSourcePath | Invoke-ScriptAnalyzer -ExcludeRule PSUseShouldProcessForStateChangingFunctions -Recurse -Verbose:$false))
+    if (($scriptAnalyzerResults = Invoke-ScriptAnalyzer -Path $Script:BuildRoot -ExcludeRule PSUseShouldProcessForStateChangingFunctions -Recurse -Verbose:$false))
     {
         $scriptAnalyzerResults | Format-Table
         throw '      One or more PSScriptAnalyzer errors/warnings where found.'

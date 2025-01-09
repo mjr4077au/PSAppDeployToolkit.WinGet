@@ -14,10 +14,23 @@ function Convert-ADTWinGetQueryOutput
         [System.String[]]$WinGetOutput
     )
 
+    # Test whether the provided output is convertable.
+    $wingetDivider = $($WinGetOutput -match '^-+$'); if (!($wingetDivider))
+    {
+        $naerParams = @{
+            Exception = [System.IO.InvalidDataException]::new("The provided WinGet output is not valid query output. Provided WinGet output was:`n$([System.String]::Join("`n", $WinGetOutput))")
+            Category = [System.Management.Automation.ErrorCategory]::InvalidData
+            ErrorId = 'WinGetQueryOutputInvalid'
+            TargetObject = $WinGetOutput
+            RecommendedAction = "Please review the WinGet output, then try again."
+        }
+        $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
+    }
+
     # Process each collected line into an object.
     try
     {
-        $WinGetOutput.Trim().TrimEnd('.') | & {
+        $WinGetOutput[($WinGetOutput.IndexOf($wingetDivider) - 1)..($WinGetOutput.Count - 1)].Trim() | & {
             begin
             {
                 # Define variables for heading data that'll be the first line via the pipe.
@@ -60,10 +73,10 @@ function Convert-ADTWinGetQueryOutput
         $naerParams = @{
             Exception = [System.IO.InvalidDataException]::new("Failed to parse provided WinGet output. Provided WinGet output was:`n$([System.String]::Join("`n", $WinGetOutput))", $_.Exception)
             Category = [System.Management.Automation.ErrorCategory]::InvalidResult
-            ErrorId = 'WinGetListOutputParseFailure'
+            ErrorId = 'WinGetQueryOutputParseFailure'
             TargetObject = $WinGetOutput
-            RecommendedAction = "Please review the WinGet output manually, then try again."
+            RecommendedAction = "Please review the WinGet output, then try again."
         }
-        throw (New-ADTErrorRecord @naerParams)
+        $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
     }
 }

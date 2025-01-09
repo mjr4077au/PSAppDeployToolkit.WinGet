@@ -90,6 +90,18 @@ function Invoke-ADTWinGetQueryOperation
     Write-ADTLogEntry -Message "Finding packages matching input criteria, please wait..."
     if (($wingetOutput = & (Get-ADTWinGetPath) $wingetArgs 2>&1 | & { process { if ($_ -match '^(\w+|-+$)') { return $_.Trim() } } }) -match '^No.+package found matching input criteria\.$')
     {
+        # Throw if we're searching.
+        if ($Action -eq 'search')
+        {
+            $naerParams = @{
+                Exception = [System.IO.InvalidDataException]::new("No package found matching input criteria.")
+                Category = [System.Management.Automation.ErrorCategory]::InvalidResult
+                ErrorId = "WinGetPackageNotFoundError"
+                TargetObject = $PSBoundParameters
+                RecommendedAction = "Please review the specified input, then try again."
+            }
+            $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
+        }
         Write-ADTLogEntry -Message "No package found matching input criteria."
         return
     }

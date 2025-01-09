@@ -125,18 +125,7 @@ function Find-ADTWinGetPackage
             try
             {
                 # Send this to the backend common function.
-                if (!($wgPackage = Invoke-ADTWinGetQueryOperation -Action Search @PSBoundParameters))
-                {
-                    $naerParams = @{
-                        Exception = [System.IO.InvalidDataException]::new("No packages matched the given input criteria.")
-                        Category = [System.Management.Automation.ErrorCategory]::InvalidResult
-                        ErrorId = "WinGetPackageNotFoundError"
-                        TargetObject = $PSBoundParameters
-                        RecommendedAction = "Please review the specified input, then try again."
-                    }
-                    throw (New-ADTErrorRecord @naerParams)
-                }
-                return $wgPackage
+                return (Invoke-ADTWinGetQueryOperation -Action Search @PSBoundParameters)
             }
             catch
             {

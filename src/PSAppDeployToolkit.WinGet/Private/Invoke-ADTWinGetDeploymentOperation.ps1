@@ -302,7 +302,7 @@ function Invoke-ADTWinGetDeploymentOperation
         # Default the scope to "Machine" for the safety of users.
         # It's super easy to install user-scoped apps into the SYSTEM
         # user's account, and it's painful to diagnose/clean up.
-        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')) -and !$wgPackage.Source.Equals('msstore'))
+        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')) -and (($wgPackage.PSObject.Properties.Name.Contains('Source') -and !$wgPackage.Source.Equals('msstore')) -or ($PSBoundParameters.ContainsKey('Source') -and ($PSBoundParameters.Source -ne 'msstore'))))
         {
             $PSBoundParameters.Add('Scope', 'Machine')
         }

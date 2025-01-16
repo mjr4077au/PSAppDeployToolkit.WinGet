@@ -103,6 +103,17 @@ function Invoke-ADTWinGetOperation
     try
     {
         $wgPackage = Find-ADTWinGetPackage -Id $Id
+        if (!($wgPackage | Measure-Object).Count.Equals(1))
+        {
+            $naerParams = @{
+                Exception = [System.ArgumentException]::new("Multiple packages found matching input criteria of [$Id]. Please refine the input.")
+                Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
+                ErrorId = 'FindWinGetPackageMultipleResults'
+                TargetObject = $wgPackage
+                RecommendedAction = "Please review the input criteria and try again."
+            }
+            throw (New-ADTErrorRecord @naerParams)
+        }
     }
     catch
     {

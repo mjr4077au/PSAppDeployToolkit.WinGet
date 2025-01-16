@@ -102,7 +102,7 @@ function Invoke-ADTWinGetOperation
     # Try to find the specified package.
     try
     {
-        $wgPackage = Find-ADTWinGetPackage -Id $Id
+        $wgPackage = Find-ADTWinGetPackage -Id $Id -MatchOption Equals
         if (!($wgPackage | Measure-Object).Count.Equals(1))
         {
             $naerParams = @{

@@ -246,6 +246,12 @@ function Invoke-ADTWinGetDeploymentOperation
             $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))
         }
 
+        # If we're deploying using an id, enforce exact matching.
+        if ($PSBoundParameters.ContainsKey('Id'))
+        {
+            $MatchOption = 'Equals'
+        }
+
         # Perform initial setup.
         try
         {
@@ -273,20 +279,11 @@ function Invoke-ADTWinGetDeploymentOperation
             {
                 $fawgpParams.Add('Source', $PSBoundParameters.Source)
             }
-            $wgPackage = Find-ADTWinGetPackage @fawgpParams -InformationAction SilentlyContinue
-
-            # Throw if there's multiple results.
-            if (!($wgPackage | Measure-Object).Count.Equals(1))
+            if (![System.String]::IsNullOrWhiteSpace($MatchOption))
             {
-                $naerParams = @{
-                    Exception = [System.ArgumentException]::new("Multiple packages found matching input criteria of [$Id]. Please refine the input.")
-                    Category = [System.Management.Automation.ErrorCategory]::InvalidArgument
-                    ErrorId = 'FindWinGetPackageMultipleResults'
-                    TargetObject = $wgPackage
-                    RecommendedAction = "Please review the input criteria and try again."
-                }
-                throw (New-ADTErrorRecord @naerParams)
+                $fawgpParams.Add('MatchOption', $MatchOption)
             }
+            $wgPackage = Find-ADTWinGetPackage @fawgpParams -InformationAction SilentlyContinue
         }
         catch
         {

@@ -456,7 +456,7 @@ function Invoke-ADTWinGetDeploymentOperation
             # https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.6.0/installer.md
             if ($PassThru)
             {
-                New-Variable -Name wingetResult -Scope 1 -Value ([pscustomobject]@{
+                New-Variable -Name wingetResult -Scope 1 -Force -Confirm:$false -Value ([pscustomobject]@{
                         Id = $wgPackage.Id
                         Name = $wgPackage.Name
                         Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage.Source }

@@ -199,6 +199,7 @@ function Install-ADTWinGetPackage
     {
         # Initialize function.
         Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+        $wingetResult = $null
     }
 
     process
@@ -218,7 +219,7 @@ function Install-ADTWinGetPackage
             finally
             {
                 # Invoke-ADTWinGetDeploymentOperation writes this variable within our scope so we can get to it.
-                if ($PassThru -and (Get-Variable -Name wingetResult -ValueOnly -ErrorAction Ignore))
+                if ($PassThru -and $wingetResult)
                 {
                     $PSCmdlet.WriteObject($wingetResult)
                 }

@@ -90,13 +90,11 @@ function Invoke-ADTWinGetRepair
     {
         Repair-ADTWinGetPackageManager
         Close-ADTSession
-        $Global:LASTEXITCODE = $adtSession.GetExitCode()
     }
     catch
     {
         Write-ADTLogEntry -Message (Resolve-ADTErrorRecord -ErrorRecord ($mainError = $_)) -Severity 3
         Close-ADTSession -ExitCode 60001 -Force:(!(Get-PSCallStack).Command.Equals('Invoke-ADTWinGetOperation'))
-        $Global:LASTEXITCODE = 60001
     }
     finally
     {

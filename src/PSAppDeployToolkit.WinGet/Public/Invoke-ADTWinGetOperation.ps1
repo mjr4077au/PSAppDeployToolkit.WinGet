@@ -134,7 +134,6 @@ function Invoke-ADTWinGetOperation
 
         ## Show Welcome Message, close Internet Explorer if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt.
         Show-ADTInstallationWelcome -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt -NoMinimizeWindows
-        if ($adtSession.GetExitCode().Equals(60012)) { $Global:LASTEXITCODE = 60012; break }
 
         ## Show Progress Message (with the default message).
         Show-ADTInstallationProgress
@@ -164,7 +163,6 @@ function Invoke-ADTWinGetOperation
 
         ## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing.
         Show-ADTInstallationWelcome -CloseProcessesCountdown 60 -NoMinimizeWindows
-        if ($adtSession.GetExitCode().Equals(60012)) { $Global:LASTEXITCODE = 60012; break }
 
         ## Show Progress Message (with the default message).
         Show-ADTInstallationProgress
@@ -194,7 +192,6 @@ function Invoke-ADTWinGetOperation
 
         ## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing.
         Show-ADTInstallationWelcome -CloseProcessesCountdown 60 -NoMinimizeWindows
-        if ($adtSession.GetExitCode().Equals(60012)) { $Global:LASTEXITCODE = 60012; break }
 
         ## Show Progress Message (with the default message).
         Show-ADTInstallationProgress
@@ -239,14 +236,12 @@ function Invoke-ADTWinGetOperation
     {
         & "$($adtSession.DeploymentType)-ADTDeployment"
         Close-ADTSession
-        $Global:LASTEXITCODE = $adtSession.GetExitCode()
     }
     catch
     {
         Write-ADTLogEntry -Message ($mainErrorMessage = Resolve-ADTErrorRecord -ErrorRecord ($mainError = $_)) -Severity 3
         Show-ADTDialogBox -Text $mainErrorMessage -Icon Stop | Out-Null
         Close-ADTSession -ExitCode 60001
-        $Global:LASTEXITCODE = 60001
     }
     finally
     {

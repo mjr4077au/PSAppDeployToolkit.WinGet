@@ -46,6 +46,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #-----------------------------------------------------------------------------
 
+# Throw if we're running in the ISE, it can't support different character encoding.
+if ($Host.Name.Equals('Windows PowerShell ISE Host'))
+{
+    throw [System.Management.Automation.ErrorRecord]::new(
+        [System.NotSupportedException]::new("This module does not support Windows PowerShell ISE as it's not possible to set the output character encoding correctly."),
+        'WindowsPowerShellIseNotSupported',
+        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+        $Host
+    )
+}
+
 # Throw if this psm1 file isn't being imported via our manifest.
 if (!([System.Environment]::StackTrace.Split("`n") -like '*Microsoft.PowerShell.Commands.ModuleCmdletBase.LoadModuleManifest(*'))
 {

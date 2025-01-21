@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.WinGet.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.2'
+    ModuleVersion = '1.0.3'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()

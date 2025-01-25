@@ -309,10 +309,29 @@ function Invoke-ADTWinGetDeploymentOperation
             }
         }
 
-        # Default the scope to "Machine" for the safety of users.
-        # It's super easy to install user-scoped apps into the SYSTEM
-        # user's account, and it's painful to diagnose/clean up.
-        if (($noScope = !$PSBoundParameters.ContainsKey('Scope')) -and (($wgPackage.PSObject.Properties.Name.Contains('Source') -and !$wgPackage.Source.Equals('msstore')) -or ($PSBoundParameters.ContainsKey('Source') -and ($PSBoundParameters.Source -ne 'msstore'))))
+        # Translate the provided scope argument, otherwise fefault the scope to "Machine" for the safety of users.
+        # It's super easy to install user-scoped apps into the SYSTEM user's account, and it's painful to diagnose/clean up.
+        if (($callerScope = if ($PSBoundParameters.ContainsKey('Scope')) { $PSBoundParameters.Scope }))
+        {
+            switch -regex ($callerScope)
+            {
+                '^System'
+                {
+                    $PSBoundParameters.Scope = 'Machine'
+                }
+                '^User'
+                {
+                    $PSBoundParameters.Scope = 'User'
+                }
+                default
+                {
+                    # If we're here, the caller's specified "Any".
+                    # As such, remove entirely so WinGet can determine.
+                    $null = $PSBoundParameters.Remove('Scope')
+                }
+            }
+        }
+        elseif (($wgPackage.PSObject.Properties.Name.Contains('Source') -and !$wgPackage.Source.Equals('msstore')) -or ($PSBoundParameters.ContainsKey('Source') -and ($PSBoundParameters.Source -ne 'msstore')))
         {
             $PSBoundParameters.Add('Scope', 'Machine')
         }
@@ -335,7 +354,7 @@ function Invoke-ADTWinGetDeploymentOperation
             $wingetOutput = & $wingetInvoker -ArgumentList (Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters)
 
             # If package isn't found, rerun again without --Scope argument.
-            if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and $noScope)
+            if (($Global:LASTEXITCODE -eq [ADTWinGetExitCode]::NO_APPLICABLE_INSTALLER) -and (!$callerScope -or $callerScope.EndsWith('Unknown')))
             {
                 Write-ADTLogEntry -Message "Attempting to execute WinGet again without '--scope' argument."
                 $wingetOutput = & $wingetInvoker -ArgumentList (Out-ADTWinGetDeploymentArgumentList -BoundParameters $PSBoundParameters -Exclude Scope)

@@ -86,9 +86,14 @@ function Invoke-ADTWinGetQueryOperation
         '--accept-source-agreements'
     )
 
-    # Invoke WinGet and return early if we couldn't find a package.
+    # Invoke WinGet, handling the required change in console output encoding.
     Write-ADTLogEntry -Message "Finding packages matching input criteria, please wait..."
-    if (($wingetOutput = & (Get-ADTWinGetPath) $wingetArgs 2>&1 | & { process { if ($_ -match '^(\w+|-+$)') { return $_.Trim() } } }) -match '^No.+package found matching input criteria\.$')
+    $origEncoding = [System.Console]::OutputEncoding; [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $wingetOutput = & (Get-ADTWinGetPath) $wingetArgs 2>&1 | & { process { if ($_ -match '^(\w+|-+$)') { return $_.Trim() } } }
+    [System.Console]::OutputEncoding = $origEncoding
+
+    # Return early if we couldn't find a package.
+    if ($WinGetOutput -match '^No.+package found matching input criteria\.$')
     {
         # Throw if we're searching.
         if ($Action -eq 'search')

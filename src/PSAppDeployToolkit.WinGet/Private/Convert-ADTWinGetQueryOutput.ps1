@@ -15,7 +15,7 @@ function Convert-ADTWinGetQueryOutput
     )
 
     # Test whether the provided output is convertable.
-    $wingetDivider = $($WinGetOutput -match '^-+$'); if (!($wingetDivider))
+    $wingetDivider = $($WinGetOutput -match '^-+$'); if (!$wingetDivider)
     {
         $naerParams = @{
             Exception = [System.IO.InvalidDataException]::new("The provided WinGet output is not valid query output. Provided WinGet output was:`n$([System.String]::Join("`n", $WinGetOutput))")

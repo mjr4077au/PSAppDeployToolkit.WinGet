@@ -56,10 +56,7 @@ function Invoke-ADTWinGetDeploymentOperation
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Version,
-
-        [Parameter(Mandatory = $false)]
-        [System.Management.Automation.SwitchParameter]$PassThru
+        [System.String]$Version
     )
 
     dynamicparam
@@ -180,7 +177,7 @@ function Invoke-ADTWinGetDeploymentOperation
             )
 
             # Ensure the action is also excluded.
-            $PSBoundParameters.Exclude = $('Action'; 'MatchOption'; 'Mode'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; 'PassThru'; $(if ($Exclude) { $Exclude } ))
+            $PSBoundParameters.Exclude = $('Action'; 'MatchOption'; 'Mode'; 'Ignore-Security-Hash'; 'DebugHashMismatch'; $(if ($Exclude) { $Exclude } ))
 
             # Output each item for the caller to collect.
             return $(
@@ -444,45 +441,33 @@ function Invoke-ADTWinGetDeploymentOperation
             $adtSession.SetExitCode($wingetExitCode)
         }
 
-        # The WinGet cmdlets don't throw on install failure, but we need to within PSADT. Try
-        # to give as much information as we can to the caller, including installer exit code.
-        try
+        # Generate the WinGet result. We do this here so we can add it to the ErrorRecord's TargetObject if we're going to throw.
+        $wingetResult = [pscustomobject]@{
+            Id = $wgPackage.Id
+            Name = $wgPackage.Name
+            Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage.Source }
+            CorrelationData = [System.String]::Empty
+            ExtendedErrorCode = $null
+            RebootRequired = $Global:LASTEXITCODE.Equals(1641) -or ($Global:LASTEXITCODE.Equals(3010))
+            Status = if ($wingetException) { "$($Action)Error" } else { 'Ok' }
+            "$($actionTranslator.$Action)ErrorCode" = $wingetExitCode
+        }
+
+        # Extend the result with an ErrorRecord for the caller to throw.
+        if ($wingetException)
         {
-            if ($wingetException)
-            {
-                # Throw our determined exception out to the caller to handle.
-                $naerParams = @{
-                    Exception = $wingetException
-                    Category = [System.Management.Automation.ErrorCategory]::InvalidResult
-                    ErrorId = "WinGetPackage$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))Failure"
-                    TargetObject = $wingetOutput
-                    RecommendedAction = "Please review the exit code, then try again."
-                }
-                throw (New-ADTErrorRecord @naerParams)
+            $naerParams = @{
+                Exception = $wingetException
+                Activity = (Get-PSCallStack)[1].Command
+                Category = [System.Management.Automation.ErrorCategory]::InvalidResult
+                ErrorId = "WinGetPackage$([System.Globalization.CultureInfo]::CurrentUICulture.TextInfo.ToTitleCase($Action))Failure"
+                TargetObject = [pscustomobject]@{ Result = $wingetResult; Output = $wingetOutput }
+                RecommendedAction = "Please review the exit code, then try again."
             }
+            $wingetResult.ExtendedErrorCode = New-ADTErrorRecord @naerParams
         }
-        catch
-        {
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
-        finally
-        {
-            # Construct the return object to the caller. We try to closely match WinGet's output as possible.
-            # According to WinGet: The Windows Package Manager does not support the reboot behavior currently.
-            # https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.6.0/installer.md
-            if ($PassThru)
-            {
-                New-Variable -Name wingetResult -Scope 1 -Force -Confirm:$false -Value ([pscustomobject]@{
-                        Id = $wgPackage.Id
-                        Name = $wgPackage.Name
-                        Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage.Source }
-                        CorrelationData = [System.String]::Empty
-                        ExtendedErrorCode = $wingetException
-                        RebootRequired = $Global:LASTEXITCODE.Equals(1641) -or ($Global:LASTEXITCODE.Equals(3010))
-                        Status = if ($wingetException) { "$($Action)Error" } else { 'Ok' }
-                        "$($actionTranslator.$Action)ErrorCode" = $wingetExitCode
-                    })
-            }
-        }
+
+        # Return the result if we've succeeded.
+        return $wingetResult
     }
 }

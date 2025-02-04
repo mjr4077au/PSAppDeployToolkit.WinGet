@@ -116,36 +116,42 @@ function Repair-ADTWinGetPackage
     {
         # Initialize function.
         Initialize-ADTFunction -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-        $wingetResult = $null
+        $null = $PSBoundParameters.Remove('PassThru')
     }
 
     process
     {
+        # Initialise variables before proceeding.
+        $wingetResult = $null
         try
         {
             try
             {
-                # Send this to the backend common function.
-                Invoke-ADTWinGetDeploymentOperation -Action Repair @PSBoundParameters
+                # Perform the required operation.
+                $wingetResult = Invoke-ADTWinGetDeploymentOperation -Action Repair @PSBoundParameters
             }
             catch
             {
                 # Re-writing the ErrorRecord with Write-Error ensures the correct PositionMessage is used.
                 Write-Error -ErrorRecord $_
             }
-            finally
+
+            # Throw if the result has an ErrorRecord.
+            if ($wingetResult.ExtendedErrorCode)
             {
-                # Invoke-ADTWinGetDeploymentOperation writes this variable within our scope so we can get to it.
-                if ($PassThru -and $wingetResult)
-                {
-                    $PSCmdlet.WriteObject($wingetResult)
-                }
+                Write-Error -ErrorRecord $wingetResult.ExtendedErrorCode
             }
         }
         catch
         {
             # Process the caught error, log it and throw depending on the specified ErrorAction.
             Invoke-ADTFunctionErrorHandler -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState -ErrorRecord $_ -LogMessage "Failed to repair the specified WinGet package."
+        }
+
+        # If we have a result and are passing through, return it.
+        if ($wingetResult -and $PassThru)
+        {
+            return $wingetResult
         }
     }
 

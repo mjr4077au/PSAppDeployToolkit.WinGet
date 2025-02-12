@@ -72,8 +72,8 @@ function Invoke-ADTWinGetQueryOperation
         }
     }
 
-    # Force exact matching for msstore identifiers.
-    if ($PSBoundParameters.ContainsKey('Id') -and !$Id.Contains('.'))
+    # Force exact matching when using an Id.
+    if ($PSBoundParameters.ContainsKey('Id'))
     {
         $MatchOption = 'Equals'
     }

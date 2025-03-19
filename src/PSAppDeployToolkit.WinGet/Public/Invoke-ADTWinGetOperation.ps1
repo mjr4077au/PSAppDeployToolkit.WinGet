@@ -8,47 +8,52 @@ function Invoke-ADTWinGetOperation
 {
     <#
     .SYNOPSIS
-        PSAppDeployToolkit - This script performs the installation or uninstallation of an application(s).
+        This function performs the end-to-end installation or uninstallation of a WinGet application using PSAppDeployToolkit.
 
     .DESCRIPTION
-        - The script is provided as a template to perform an install, uninstall, or repair of an application(s).
-        - The script either performs an "Install", "Uninstall", or "Repair" deployment type.
+        This function performs the end-to-end installation or uninstallation of a WinGet application using PSAppDeployToolkit.
+
+        - The function is provided as a basic implementation to perform an install, uninstall, or repair of a WinGet application.
+        - The function either performs an "Install", "Uninstall", or "Repair" deployment type.
         - The install deployment type is broken down into 3 main sections/phases: Pre-Install, Install, and Post-Install.
 
-        The script imports the PSAppDeployToolkit module which contains the logic and functions required to install or uninstall an application.
+        This function is not intended to be called from an existing `Invoke-AppDeployToolkit.ps1` script. For usage within your own script, please use the individual WinGet functions, such as `Install-ADTWinGetPackage`, etc.
 
     .PARAMETER Id
         The WinGet package identifier for the deployment.
 
     .PARAMETER DeploymentType
-        The type of deployment to perform. Default is: Install.
+        The type of deployment to perform.
 
     .PARAMETER DeployMode
-        Specifies whether the installation should be run in Interactive, Silent, or NonInteractive mode. Default is: Interactive. Options: Interactive = Shows dialogs, Silent = No dialogs, NonInteractive = Very silent, i.e. no blocking apps. NonInteractive mode is automatically set if it is detected that the process is not user interactive.
+        Specifies whether the installation should be run in Interactive, Silent, or NonInteractive mode.
 
     .PARAMETER AllowRebootPassThru
         Allows the 3010 return code (requires restart) to be passed back to the parent process (e.g. SCCM) if detected from an installation. If 3010 is passed back to SCCM, a reboot prompt will be triggered.
 
     .EXAMPLE
-        powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeployMode Silent
+        powershell.exe -File Invoke-AppDeployToolkit.ps1 -Id Microsoft.VSTOR
 
     .EXAMPLE
-        powershell.exe -File Invoke-AppDeployToolkit.ps1 -AllowRebootPassThru
+        powershell.exe -File Invoke-AppDeployToolkit.ps1 -Id Microsoft.VSTOR -DeployMode Silent
 
     .EXAMPLE
-        powershell.exe -File Invoke-AppDeployToolkit.ps1 -DeploymentType Uninstall
+        powershell.exe -File Invoke-AppDeployToolkit.ps1 -Id Microsoft.VSTOR -AllowRebootPassThru
 
     .EXAMPLE
-        Invoke-AppDeployToolkit.exe -DeploymentType "Install" -DeployMode "Silent"
+        powershell.exe -File Invoke-AppDeployToolkit.ps1 -Id Microsoft.VSTOR -DeploymentType Uninstall
+
+    .EXAMPLE
+        Invoke-AppDeployToolkit.exe -Id Microsoft.VSTOR -DeploymentType Install -DeployMode Silent
 
     .INPUTS
-        None. You cannot pipe objects to this script.
+        None. You cannot pipe objects to this function.
 
     .OUTPUTS
-        None. This script does not generate any output.
+        None. This function does not generate any output.
 
     .LINK
-        https://psappdeploytoolkit.com
+        https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
     #>
 
     [CmdletBinding()]
@@ -60,20 +65,17 @@ function Invoke-ADTWinGetOperation
 
         [Parameter(Mandatory = $false)]
         [ValidateSet('Install', 'Uninstall', 'Repair')]
-        [System.String]$DeploymentType = 'Install',
+        [PSDefaultValue(Help = 'Install', Value = 'Install')]
+        [System.String]$DeploymentType,
 
         [Parameter(Mandatory = $false)]
         [ValidateSet('Interactive', 'Silent', 'NonInteractive')]
-        [System.String]$DeployMode = 'Interactive',
+        [PSDefaultValue(Help = 'Interactive', Value = 'Interactive')]
+        [System.String]$DeployMode,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$AllowRebootPassThru
     )
-
-
-    ##================================================
-    ## MARK: Pre-initialization
-    ##================================================
 
     # Set strict error handling across entire operation.
     $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -81,145 +83,25 @@ function Invoke-ADTWinGetOperation
     Set-StrictMode -Version 3
     $mainError = $null
 
-    # Confirm WinGet is healthy, then try to find the specified package.
+    # Perform initial setup and establish new DeploymentSession.
     try
-    {
-        Assert-ADTWinGetPackageManager
-    }
-    catch
     {
         try
         {
-            Invoke-ADTWinGetRepair
             Assert-ADTWinGetPackageManager
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError($_)
+            Invoke-ADTWinGetRepair
+            Assert-ADTWinGetPackageManager
         }
-    }
-
-    # Try to find the specified package.
-    try
-    {
-        $wgPackage = Find-ADTWinGetPackage -Id $Id -MatchOption Equals
-    }
-    catch
-    {
-        $PSCmdlet.ThrowTerminatingError($_)
-    }
-
-
-    ##================================================
-    ## MARK: Variables
-    ##================================================
-
-    $adtSession = @{
-        # App variables.
-        AppName = ($wgPackage.Name -replace ([regex]::Escape($wgPackage.Version))).Trim()
-        AppVersion = $wgPackage.Version
-
-        # Script variables.
-        DeployAppScriptFriendlyName = $MyInvocation.MyCommand.Name
-        DeployAppScriptVersion = $MyInvocation.MyCommand.Module.Version
-        DeployAppScriptParameters = $PSBoundParameters
-    }
-
-    function Install-ADTDeployment
-    {
-        ##================================================
-        ## MARK: Pre-Install
-        ##================================================
-        $adtSession.InstallPhase = "Pre-$($adtSession.DeploymentType)"
-
-        ## Show Welcome Message, close Internet Explorer if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt.
-        Show-ADTInstallationWelcome -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt -NoMinimizeWindows
-
-        ## Show Progress Message (with the default message).
-        Show-ADTInstallationProgress
-
-
-        ##================================================
-        ## MARK: Install
-        ##================================================
-        $adtSession.InstallPhase = $adtSession.DeploymentType
-
-        ## Install our WinGet package.
-        $null = Install-ADTWinGetPackage -Id $Id
-
-
-        ##================================================
-        ## MARK: Post-Install
-        ##================================================
-        $adtSession.InstallPhase = "Post-$($adtSession.DeploymentType)"
-    }
-
-    function Uninstall-ADTDeployment
-    {
-        ##================================================
-        ## MARK: Pre-Uninstall
-        ##================================================
-        $adtSession.InstallPhase = "Pre-$($adtSession.DeploymentType)"
-
-        ## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing.
-        Show-ADTInstallationWelcome -CloseProcessesCountdown 60 -NoMinimizeWindows
-
-        ## Show Progress Message (with the default message).
-        Show-ADTInstallationProgress
-
-
-        ##================================================
-        ## MARK: Uninstall
-        ##================================================
-        $adtSession.InstallPhase = $adtSession.DeploymentType
-
-        ## Uninstall our WinGet package.
-        $null = Uninstall-ADTWinGetPackage -Id $Id
-
-
-        ##================================================
-        ## MARK: Post-Uninstallation
-        ##================================================
-        $adtSession.InstallPhase = "Post-$($adtSession.DeploymentType)"
-    }
-
-    function Repair-ADTDeployment
-    {
-        ##================================================
-        ## MARK: Pre-Repair
-        ##================================================
-        $adtSession.InstallPhase = "Pre-$($adtSession.DeploymentType)"
-
-        ## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing.
-        Show-ADTInstallationWelcome -CloseProcessesCountdown 60 -NoMinimizeWindows
-
-        ## Show Progress Message (with the default message).
-        Show-ADTInstallationProgress
-
-
-        ##================================================
-        ## MARK: Repair
-        ##================================================
-        $adtSession.InstallPhase = $adtSession.DeploymentType
-
-        ## Repair our WinGet package.
-        $null = Repair-ADTWinGetPackage -Id $Id
-
-
-        ##================================================
-        ## MARK: Post-Repair
-        ##================================================
-        $adtSession.InstallPhase = "Post-$($adtSession.DeploymentType)"
-    }
-
-
-    ##================================================
-    ## MARK: Initialization
-    ##================================================
-
-    # Import the module and instantiate a new session.
-    try
-    {
+        $adtSession = @{
+            AppName = (($wgPackage = Find-ADTWinGetPackage -Id $Id -MatchOption Equals).Name -replace ([regex]::Escape($wgPackage.Version))).Trim()
+            AppVersion = $wgPackage.Version
+            DeployAppScriptFriendlyName = $MyInvocation.MyCommand.Name
+            DeployAppScriptVersion = $MyInvocation.MyCommand.Module.Version
+            DeployAppScriptParameters = $PSBoundParameters
+        }
         $adtSession = Open-ADTSession -SessionState $ExecutionContext.SessionState @adtSession @PSBoundParameters -PassThru
     }
     catch
@@ -227,14 +109,25 @@ function Invoke-ADTWinGetOperation
         $PSCmdlet.ThrowTerminatingError($_)
     }
 
-
-    ##================================================
-    ## MARK: Invocation
-    ##================================================
-
+    # Main invocation once session is open.
     try
     {
-        & "$($adtSession.DeploymentType)-ADTDeployment"
+        # Show Welcome Message.
+        $adtSession.InstallPhase = "Pre-$($adtSession.DeploymentType)"
+        $saiwParams = if ($adtSession.DeploymentType -eq 'Install')
+        {
+            @{ AllowDefer = $true; DeferTimes = 3; CheckDiskSpace = $true; PersistPrompt = $true; NoMinimizeWindows = $true }
+        }
+        else
+        {
+            @{ CloseProcessesCountdown = 60; NoMinimizeWindows = $true }
+        }
+        Show-ADTInstallationWelcome @saiwParams
+        Show-ADTInstallationProgress
+
+        # Perform our WinGet action and close out
+        $adtSession.InstallPhase = $adtSession.DeploymentType
+        $null = & "$($adtSession.DeploymentType)-ADTWinGetPackage" -Id $Id
         Close-ADTSession
     }
     catch

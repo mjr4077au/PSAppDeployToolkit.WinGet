@@ -30,7 +30,7 @@ function Invoke-ADTWinGetRepair
         None. This script does not generate any output.
 
     .LINK
-        https://psappdeploytoolkit.com
+        https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
     #>
 
     [CmdletBinding()]

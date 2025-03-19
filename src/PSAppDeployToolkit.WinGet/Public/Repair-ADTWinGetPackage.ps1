@@ -145,7 +145,7 @@ function Repair-ADTWinGetPackage
         catch
         {
             # Process the caught error, log it and throw depending on the specified ErrorAction.
-            Invoke-ADTFunctionErrorHandler -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState -ErrorRecord $_ -LogMessage "Failed to repair the specified WinGet package."
+            Invoke-ADTFunctionErrorHandler -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState -ErrorRecord $_ -LogMessage "Failed to repair the specified WinGet package." -DisableErrorResolving:($null -ne $wingetResult)
         }
 
         # If we have a result and are passing through, return it.

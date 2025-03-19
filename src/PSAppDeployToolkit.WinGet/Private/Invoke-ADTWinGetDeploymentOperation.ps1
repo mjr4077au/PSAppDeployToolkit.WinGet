@@ -130,12 +130,6 @@ function Invoke-ADTWinGetDeploymentOperation
                         [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
                     )
                 ))
-            $paramDictionary.Add('Scope', [System.Management.Automation.RuntimeDefinedParameter]::new(
-                    'Scope', [String], $(
-                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
-                        [System.Management.Automation.ValidateSetAttribute]::new('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')
-                    )
-                ))
             $paramDictionary.Add('Skip-Dependencies', [System.Management.Automation.RuntimeDefinedParameter]::new(
                     'Skip-Dependencies', [System.Management.Automation.SwitchParameter], $(
                         [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
@@ -145,6 +139,12 @@ function Invoke-ADTWinGetDeploymentOperation
         }
         if ($Action -ne 'repair')
         {
+            $paramDictionary.Add('Scope', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                    'Scope', [System.String], $(
+                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                        [System.Management.Automation.ValidateSetAttribute]::new('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')
+                    )
+                ))
             $paramDictionary.Add('Force', [System.Management.Automation.RuntimeDefinedParameter]::new(
                     'Force', [System.Management.Automation.SwitchParameter], $(
                         [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }

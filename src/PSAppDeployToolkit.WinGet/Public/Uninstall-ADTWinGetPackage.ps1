@@ -37,6 +37,9 @@ function Uninstall-ADTWinGetPackage
     .PARAMETER Name
         Specify the name of the package to be installed.
 
+    .PARAMETER Scope
+        Specify WinGet package installer scope.
+
     .PARAMETER Source
         Specify the name of the WinGet source from which the package should be installed.
 
@@ -108,6 +111,10 @@ function Uninstall-ADTWinGetPackage
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Name,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')]
+        [System.String]$Scope,
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]

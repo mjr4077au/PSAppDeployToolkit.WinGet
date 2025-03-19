@@ -13,8 +13,8 @@ Uninstalls a WinGet Package.
 
 ```powershell
 Uninstall-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-Force] [-Id <String>] [-Log <String>]
- [-Mode <String>] [-Moniker <String>] [-Name <String>] [-Source <String>] [-Version <String>] [-PassThru]
- [<CommonParameters>]
+ [-Mode <String>] [-Moniker <String>] [-Name <String>] [-Scope <String>] [-Source <String>] [-Version <String>]
+ [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -175,6 +175,22 @@ Accept wildcard characters: False
 ### -Name
 
 Specify the name of the package to be installed.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Scope
+
+Specify WinGet package installer scope.
 
 ```yaml
 Type: String

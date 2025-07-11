@@ -14,38 +14,21 @@ try
     Export-ModuleMember -Function $Module.Manifest.FunctionsToExport
 
     # Store module globals needed for the lifetime of the module.
-    New-Variable -Name ADT -Option Constant -Value ([pscustomobject]@{
-            WinGetMinVersion = [System.Version]::new(1, 7, 10582)
-            RunningAsSystem = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
-            RunningAsAdmin = Test-ADTCallerIsAdmin
-            SystemArchitecture = switch ([PSADT.OperatingSystem.OSHelper]::GetArchitecture())
-            {
-                ([PSADT.Shared.SystemArchitecture]::ARM64)
-                {
-                    'arm64'
-                    break
-                }
-                ([PSADT.Shared.SystemArchitecture]::AMD64)
-                {
-                    'x64'
-                    break
-                }
-                ([PSADT.Shared.SystemArchitecture]::i386)
-                {
-                    'x86'
-                    break
-                }
-                default
-                {
-                    throw [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new("The operating system of this computer is of an unsupported architecture."),
-                        'WinGetInvalidArchitectureError',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $_
-                    )
-                }
-            }
-        })
+    $currentWindowsIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    try
+    {
+        New-Variable -Name ADT -Option Constant -Value ([pscustomobject]@{
+                WinGetMinVersion = [System.Version]::new(1, 7, 10582)
+                RunningAsSystem = $currentWindowsIdentity.User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
+                RunningAsAdmin = Test-ADTCallerIsAdmin
+                SystemArchitecture = [System.Runtime.InteropServices.RuntimeInformation, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]::OSArchitecture.ToString().ToLower()
+            })
+    }
+    finally
+    {
+        $currentWindowsIdentity.Dispose()
+        Remove-Variable -Name currentWindowsIdentity -Force -Confirm:$false
+    }
 
     # Announce successful importation of module.
     Write-ADTLogEntry -Message "Module [PSAppDeployToolkit.WinGet] imported successfully." -ScriptSection Initialization -Source 'PSAppDeployToolkit.WinGet.psm1'

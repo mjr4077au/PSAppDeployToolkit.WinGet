@@ -18,7 +18,7 @@ try
     try
     {
         New-Variable -Name ADT -Option Constant -Value ([pscustomobject]@{
-                WinGetMinVersion = [System.Version]::new(1, 7, 10582)
+                WinGetMinVersion = [System.Version]::new(1, 10, 390)
                 RunningAsSystem = $currentWindowsIdentity.User.IsWellKnown([System.Security.Principal.WellKnownSidType]::LocalSystemSid)
                 RunningAsAdmin = Test-ADTCallerIsAdmin
                 SystemArchitecture = [System.Runtime.InteropServices.RuntimeInformation, mscorlib, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = b77a5c561934e089]::OSArchitecture.ToString().ToLower()

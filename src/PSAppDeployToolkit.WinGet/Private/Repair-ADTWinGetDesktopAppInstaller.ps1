@@ -9,22 +9,18 @@ function Repair-ADTWinGetDesktopAppInstaller
     # Update WinGet to the latest version. Don't rely in 3rd party store API services for this.
     # https://learn.microsoft.com/en-us/windows/package-manager/winget/#install-winget-on-windows-sandbox
     Write-ADTLogEntry -Message "Installing/updating $(($pkgName = "Microsoft.DesktopAppInstaller")) dependency, please wait..."
+    [System.Uri[]]$links = Get-ADTGitHubReleaseAssetUri -Account microsoft -Repository winget-cli
 
     # Define installation file info.
     $packages = @(
         @{
-            Name = 'C++ Desktop Bridge Runtime dependency'
-            Uri = ($uri = [System.Uri]'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx')
-            FilePath = "$([System.IO.Path]::GetTempPath())$($uri.Segments[-1])"
-        }
-        @{
-            Name = 'Windows UI Library dependency'
-            Uri = ($uri = [System.Uri]'https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx')
+            Name = 'latest WinGet dependencies'
+            Uri = ($uri = $links | & { process { if ($_.AbsoluteUri.EndsWith('DesktopAppInstaller_Dependencies.zip')) { return $_ } } } | Select-Object -First 1)
             FilePath = "$([System.IO.Path]::GetTempPath())$($uri.Segments[-1])"
         }
         @{
             Name = 'latest WinGet msixbundle'
-            Uri = ($uri = Get-ADTRedirectedUri -Uri 'https://aka.ms/getwinget')
+            Uri = ($uri = $links | & { process { if ($_.AbsoluteUri.EndsWith('Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle')) { return $_ } } } | Select-Object -First 1)
             FilePath = "$([System.IO.Path]::GetTempPath())$($uri.Segments[-1])"
         }
     )
@@ -46,12 +42,15 @@ function Repair-ADTWinGetDesktopAppInstaller
         "$([System.IO.Path]::GetFileNameWithoutExtension($packages[(-1)].FilePath)).log"
     }
 
+    # Extract dependencies so they can be used with Add-AppxProvisionedPackage.
+    Expand-Archive -LiteralPath $packages[0].FilePath -DestinationPath ($depsPath = [System.IO.Path]::GetFileNameWithoutExtension($packages[0].FilePath)) -Force
+
     # Pre-provision package in the system.
     $aappParams = @{
         Online = $true
         SkipLicense = $true
-        PackagePath = $packages[(-1)].FilePath
-        DependencyPackagePath = $packages[(0)..($packages.Count - 2)].FilePath
+        PackagePath = $packages[-1].FilePath
+        DependencyPackagePath = [System.IO.Directory]::GetFiles([System.IO.Path]::Combine($depsPath, $Script:ADT.SystemArchitecture))
         LogPath = $logFile
     }
     Write-ADTLogEntry -Message "Pre-provisioning [$pkgName] $($packages[-1].Uri.Segments[-2].Trim('/')), please wait..."

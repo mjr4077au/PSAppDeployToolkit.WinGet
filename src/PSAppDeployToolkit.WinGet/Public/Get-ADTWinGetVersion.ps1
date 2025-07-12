@@ -71,7 +71,19 @@ function Get-ADTWinGetVersion
                         Exception = [System.InvalidOperationException]::new("The installed version of WinGet was unable to run.")
                         Category = [System.Management.Automation.ErrorCategory]::PermissionDenied
                         ErrorId = 'WinGetNullOutputError'
+                        TargetObject = $wingetVer
                         RecommendedAction = "Please run [Repair-ADTWinGetPackageManager] as an admin, then try again."
+                    }
+                    throw (New-ADTErrorRecord @naerParams)
+                }
+                if ($wingetVer -isnot [System.String])
+                {
+                    $naerParams = @{
+                        Exception = [System.InvalidOperationException]::new("The output from [winget.exe --version] is invalid.")
+                        Category = [System.Management.Automation.ErrorCategory]::InvalidResult
+                        ErrorId = 'WinGetInvalidOutputError'
+                        TargetObject = $wingetVer
+                        RecommendedAction = "Please report this error at [https://github.com/mjr4077au/PSAppDeployToolkit.WinGet/issues], then try again."
                     }
                     throw (New-ADTErrorRecord @naerParams)
                 }

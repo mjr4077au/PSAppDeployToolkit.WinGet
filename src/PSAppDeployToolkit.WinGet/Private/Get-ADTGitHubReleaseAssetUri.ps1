@@ -28,7 +28,7 @@ function Get-ADTGitHubReleaseAssetUri
     )
 
     # Get the list of URLs from GitHub's API.
-    $links = (Invoke-RestMethod -UseBasicParsing -Uri "https://api.github.com/repos/$Account/$Repository/releases/latest").assets.browser_download_url
+    $links = (Invoke-RestMethod -UseBasicParsing -Uri "https://api.github.com/repos/$Account/$Repository/releases/latest" -Verbose:$false).assets.browser_download_url
 
     # Find the one that matches the pattern and confirm we have a singular result.
     if ($PSCmdlet.ParameterSetName.Equals('FilePattern'))

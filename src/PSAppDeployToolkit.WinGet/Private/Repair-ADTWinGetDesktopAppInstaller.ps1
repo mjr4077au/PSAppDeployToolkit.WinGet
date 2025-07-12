@@ -54,7 +54,7 @@ function Repair-ADTWinGetDesktopAppInstaller
         LogPath = $logFile
     }
     Write-ADTLogEntry -Message "Pre-provisioning [$pkgName] $($packages[-1].Uri.Segments[-2].Trim('/')), please wait..."
-    $null = Add-AppxProvisionedPackage @aappParams
+    $null = Add-AppxProvisionedPackage @aappParams -Verbose:$false
 
     # Register the package again if we're not running as SYSTEM.
     if (!$Script:ADT.RunningAsSystem)

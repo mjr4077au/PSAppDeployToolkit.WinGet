@@ -88,7 +88,7 @@ function Get-ADTWinGetVersion
                     throw (New-ADTErrorRecord @naerParams)
                 }
                 Write-ADTLogEntry -Message "Installed WinGet version is [$($wingetVer)]."
-                return $wingetVer
+                return $wingetVer.Replace('-preview', $null)
             }
             catch
             {

@@ -56,4 +56,11 @@ function Repair-ADTWinGetDesktopAppInstaller
     }
     Write-ADTLogEntry -Message "Pre-provisioning [$pkgName] $($packages[-1].Uri.Segments[-2].Trim('/')), please wait..."
     $null = Add-AppxProvisionedPackage @aappParams
+
+    # Register the package again if we're not running as SYSTEM.
+    if (!$Script:ADT.RunningAsSystem)
+    {
+        Write-ADTLogEntry -Message "Registering [$pkgName] $($packages[-1].Uri.Segments[-2].Trim('/')), please wait..."
+        Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+    }
 }

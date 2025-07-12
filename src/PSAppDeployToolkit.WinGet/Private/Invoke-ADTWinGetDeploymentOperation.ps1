@@ -415,7 +415,7 @@ function Invoke-ADTWinGetDeploymentOperation
         # Generate an exception if we received any failure.
         $wingetException = if (($wingetErrLine = $($wingetOutput -match 'exit code: \d+')))
         {
-            [System.Runtime.InteropServices.ExternalException]::new($wingetErrLine, [System.Int32]($wingetErrLine -replace '^.+:\s(\d+)\.$', '$1'))
+            [System.Runtime.InteropServices.ExternalException]::new($wingetErrLine, [System.Int32]($wingetErrLine -replace '^.+:\s((0x\d{8})|\d+)(.+)?$', '$1'))
         }
         elseif ($Global:LASTEXITCODE)
         {

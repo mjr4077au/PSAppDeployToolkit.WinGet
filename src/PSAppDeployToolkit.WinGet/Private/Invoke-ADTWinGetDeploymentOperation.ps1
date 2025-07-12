@@ -445,7 +445,7 @@ function Invoke-ADTWinGetDeploymentOperation
         $wingetResult = [pscustomobject]@{
             Id = $wgPackage.Id
             Name = $wgPackage.Name
-            Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage.Source }
+            Source = if ($PSBoundParameters.ContainsKey('Source')) { $Source } else { $wgPackage | Select-Object -ExpandProperty Source -ErrorAction Ignore }
             CorrelationData = [System.String]::Empty
             ExtendedErrorCode = $null
             RebootRequired = $Global:LASTEXITCODE.Equals(1641) -or ($Global:LASTEXITCODE.Equals(3010))

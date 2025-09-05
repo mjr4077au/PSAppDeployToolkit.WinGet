@@ -106,7 +106,11 @@ function Get-ADTWinGetPackage
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Tag
+        [System.String]$Tag,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('user', 'machine')]
+        [System.String]$Scope
     )
 
     begin

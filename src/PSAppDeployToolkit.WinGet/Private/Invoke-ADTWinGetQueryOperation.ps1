@@ -56,7 +56,11 @@ function Invoke-ADTWinGetQueryOperation
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Tag
+        [System.String]$Tag,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('user', 'machine')]
+        [System.String]$Scope
     )
 
     # Confirm WinGet is good to go.

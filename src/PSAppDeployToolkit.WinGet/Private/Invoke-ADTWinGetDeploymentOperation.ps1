@@ -1,4 +1,4 @@
-﻿#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
 # MARK: Invoke-ADTWinGetDeploymentOperation
 #
@@ -136,6 +136,12 @@ function Invoke-ADTWinGetDeploymentOperation
                         [System.Management.Automation.AliasAttribute]::new('SkipDependencies')
                     )
                 ))
+            $paramDictionary.Add('Uninstall-Previous', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                    'Uninstall-Previous', [System.Management.Automation.SwitchParameter], $(
+                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                        [System.Management.Automation.AliasAttribute]::new('UninstallPrevious')
+                    )
+                ))
         }
         if ($Action -ne 'repair')
         {
@@ -148,6 +154,15 @@ function Invoke-ADTWinGetDeploymentOperation
             $paramDictionary.Add('Force', [System.Management.Automation.RuntimeDefinedParameter]::new(
                     'Force', [System.Management.Automation.SwitchParameter], $(
                         [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                    )
+                ))
+        }
+        if ($Action -eq 'uninstall')
+        {
+            $paramDictionary.Add('All-Versions', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                    'All-Versions', [System.Management.Automation.SwitchParameter], $(
+                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                        [System.Management.Automation.AliasAttribute]::new('AllVersions')
                     )
                 ))
         }

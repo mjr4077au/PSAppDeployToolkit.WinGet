@@ -1,4 +1,4 @@
-﻿#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
 # MARK: Install-ADTWinGetPackage
 #
@@ -73,6 +73,9 @@ function Install-ADTWinGetPackage
     .PARAMETER Version
         Specify the version of the package.
 
+    .PARAMETER UninstallPrevious
+        Uninstall any previous version of the package before installing.
+
     .PARAMETER DebugHashMismatch
         Forces the AllowHashMismatch for debugging purposes.
 
@@ -103,6 +106,11 @@ function Install-ADTWinGetPackage
         Install-ADTWinGetPackage Microsoft.PowerShell -Version 7.4.4.0
 
         This example shows how to install a specific version of a package using a query. The command does a query search for packages matching `Microsoft.PowerShell`. The results of the search a limited to matches with the version of `7.4.4.0`.
+
+    .EXAMPLE
+        Install-ADTWinGetPackage -Id Microsoft.PowerShell -UninstallPrevious
+
+        This example shows how to install a package while uninstalling any previous version first.
 
     .LINK
         https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
@@ -187,6 +195,9 @@ function Install-ADTWinGetPackage
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Version,
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$UninstallPrevious,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$DebugHashMismatch,

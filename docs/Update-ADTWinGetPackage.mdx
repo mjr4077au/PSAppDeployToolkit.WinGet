@@ -16,7 +16,7 @@ Update-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-AllowHashM
  [-Architecture <String>] [-Custom <String>] [-Force] [-Header <String>] [-Id <String>] [-IncludeUnknown]
  [-InstallerType <String>] [-Locale <String>] [-Location <String>] [-Log <String>] [-Mode <String>]
  [-Moniker <String>] [-Name <String>] [-Override <String>] [-Scope <String>] [-SkipDependencies]
- [-Source <String>] [-Version <String>] [-DebugHashMismatch] [-PassThru] [<CommonParameters>]
+ [-Source <String>] [-Version <String>] [-UninstallPrevious] [-DebugHashMismatch] [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -408,6 +408,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UninstallPrevious
+
+Uninstall the previous version of the package before upgrading.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -13,7 +13,7 @@ Lists installed packages.
 
 ```powershell
 Get-ADTWinGetPackage [[-Query] <String>] [-MatchOption <String>] [-Command <String>] [-Count <UInt32>]
- [-Id <String>] [-Moniker <String>] [-Name <String>] [-Source <String>] [-Tag <String>] [<CommonParameters>]
+ [-Id <String>] [-Moniker <String>] [-Name <String>] [-Scope <String>] [-Source <String>] [-Tag <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -48,6 +48,15 @@ Get-ADTWinGetPackage -Name "PowerShell"
 
 This example shows how to get installed packages that match a name value.
 The command does a substring comparison of the provided name with installed package names.
+
+### EXAMPLE 4
+
+```powershell
+Get-ADTWinGetPackage -Scope System
+```
+
+This example shows how to list all packages installed in the machine scope.
+This is useful when running in the SYSTEM context.
 
 ## PARAMETERS
 
@@ -156,6 +165,24 @@ Specify the name of the package to list.
 Type: String
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Scope
+
+Specify WinGet package installer scope.
+Use this parameter to list packages installed in the machine scope when running in the SYSTEM context.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+Accepted values: Any, User, System, UserOrUnknown, SystemOrUnknown
 
 Required: False
 Position: Named

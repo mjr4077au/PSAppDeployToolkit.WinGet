@@ -1,4 +1,4 @@
-﻿#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
 # MARK: Invoke-ADTWinGetQueryOperation
 #
@@ -42,6 +42,10 @@ function Invoke-ADTWinGetQueryOperation
         [System.String]$Name,
 
         [Parameter(Mandatory = $false)]
+        [ValidateSet('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')]
+        [System.String]$Scope,
+
+        [Parameter(Mandatory = $false)]
         [ValidateScript({
                 try
                 {
@@ -76,6 +80,26 @@ function Invoke-ADTWinGetQueryOperation
     if ($PSBoundParameters.ContainsKey('Id'))
     {
         $MatchOption = 'Equals'
+    }
+
+    # Translate Scope parameter values to WinGet CLI equivalents.
+    # PowerShell uses 'System'/'User' but WinGet CLI expects 'machine'/'user'.
+    if ($PSBoundParameters.ContainsKey('Scope'))
+    {
+        $PSBoundParameters['Scope'] = switch ($PSBoundParameters['Scope'])
+        {
+            'System' { 'machine'; break }
+            'SystemOrUnknown' { 'machine'; break }
+            'User' { 'user'; break }
+            'UserOrUnknown' { 'user'; break }
+            'Any' { $null; break }
+            default { $PSBoundParameters['Scope'] }
+        }
+        # Remove Scope if it was set to $null (e.g., 'Any' means no scope filter).
+        if ($null -eq $PSBoundParameters['Scope'])
+        {
+            $null = $PSBoundParameters.Remove('Scope')
+        }
     }
 
     # Set up arguments array for WinGet.

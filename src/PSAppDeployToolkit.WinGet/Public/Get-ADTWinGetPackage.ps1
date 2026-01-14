@@ -1,4 +1,4 @@
-﻿#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
 # MARK: Get-ADTWinGetPackage
 #
@@ -34,6 +34,9 @@ function Get-ADTWinGetPackage
     .PARAMETER Name
         Specify the name of the package to list.
 
+    .PARAMETER Scope
+        Specify WinGet package installer scope. Use this parameter to list packages installed in the machine scope when running in the SYSTEM context.
+
     .PARAMETER Source
         Specify the name of the WinGet source of the package.
 
@@ -64,6 +67,11 @@ function Get-ADTWinGetPackage
         Get-ADTWinGetPackage -Name "PowerShell"
 
         This example shows how to get installed packages that match a name value. The command does a substring comparison of the provided name with installed package names.
+
+    .EXAMPLE
+        Get-ADTWinGetPackage -Scope System
+
+        This example shows how to list all packages installed in the machine scope. This is useful when running in the SYSTEM context.
 
     .LINK
         https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
@@ -99,6 +107,10 @@ function Get-ADTWinGetPackage
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Name,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')]
+        [System.String]$Scope,
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]

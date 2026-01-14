@@ -1,4 +1,4 @@
-﻿#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
 # MARK: Uninstall-ADTWinGetPackage
 #
@@ -46,6 +46,9 @@ function Uninstall-ADTWinGetPackage
     .PARAMETER Version
         Specify the version of the package.
 
+    .PARAMETER AllVersions
+        Use this parameter to uninstall all installed versions of a package.
+
     .PARAMETER PassThru
         Returns an object detailing the operation, just as Microsoft's module does by default.
 
@@ -73,6 +76,11 @@ function Uninstall-ADTWinGetPackage
         Uninstall-ADTWinGetPackage Microsoft.PowerShell -Version 7.4.4.0
 
         This example shows how to uninstall a specific version of a package using a query. The command does a query search for packages matching `Microsoft.PowerShell`. The results of the search a limited to matches with the version of `7.4.4.0`.
+
+    .EXAMPLE
+        Uninstall-ADTWinGetPackage -Id Microsoft.PowerShell -AllVersions
+
+        This example shows how to uninstall all installed versions of a package by specifying the package identifier with the AllVersions switch.
 
     .LINK
         https://github.com/mjr4077au/PSAppDeployToolkit.WinGet
@@ -123,6 +131,9 @@ function Uninstall-ADTWinGetPackage
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Version,
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$AllVersions,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$PassThru

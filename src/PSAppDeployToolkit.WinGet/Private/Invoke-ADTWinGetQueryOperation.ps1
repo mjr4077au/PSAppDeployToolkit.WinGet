@@ -42,10 +42,6 @@ function Invoke-ADTWinGetQueryOperation
         [System.String]$Name,
 
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')]
-        [System.String]$Scope,
-
-        [Parameter(Mandatory = $false)]
         [ValidateScript({
                 try
                 {
@@ -60,7 +56,11 @@ function Invoke-ADTWinGetQueryOperation
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [System.String]$Tag
+        [System.String]$Tag,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('Any', 'User', 'System', 'UserOrUnknown', 'SystemOrUnknown')]
+        [System.String]$Scope
     )
 
     # Confirm WinGet is good to go.
@@ -84,6 +84,7 @@ function Invoke-ADTWinGetQueryOperation
 
     # Translate Scope parameter values to WinGet CLI equivalents.
     # PowerShell uses 'System'/'User' but WinGet CLI expects 'machine'/'user'.
+    # This must happen BEFORE Convert-ADTFunctionParamsToArgArray is called.
     if ($PSBoundParameters.ContainsKey('Scope'))
     {
         $PSBoundParameters['Scope'] = switch ($PSBoundParameters['Scope'])
@@ -123,10 +124,10 @@ function Invoke-ADTWinGetQueryOperation
         if ($Action -eq 'search')
         {
             $naerParams = @{
-                Exception = [System.IO.InvalidDataException]::new("No package found matching input criteria.")
-                Category = [System.Management.Automation.ErrorCategory]::InvalidResult
-                ErrorId = "WinGetPackageNotFoundError"
-                TargetObject = $PSBoundParameters
+                Exception         = [System.IO.InvalidDataException]::new("No package found matching input criteria.")
+                Category          = [System.Management.Automation.ErrorCategory]::InvalidResult
+                ErrorId           = "WinGetPackageNotFoundError"
+                TargetObject      = $PSBoundParameters
                 RecommendedAction = "Please review the specified input, then try again."
             }
             $PSCmdlet.ThrowTerminatingError((New-ADTErrorRecord @naerParams))

@@ -136,6 +136,12 @@ function Invoke-ADTWinGetDeploymentOperation
                         [System.Management.Automation.AliasAttribute]::new('SkipDependencies')
                     )
                 ))
+            $paramDictionary.Add('Uninstall-Previous', [System.Management.Automation.RuntimeDefinedParameter]::new(
+                    'Uninstall-Previous', [System.Management.Automation.SwitchParameter], $(
+                        [System.Management.Automation.ParameterAttribute]@{ Mandatory = $false }
+                        [System.Management.Automation.AliasAttribute]::new('UninstallPrevious')
+                    )
+                ))
         }
         if ($Action -ne 'repair')
         {
